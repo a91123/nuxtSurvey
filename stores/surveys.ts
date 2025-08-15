@@ -132,7 +132,7 @@ export const useSurveysStore = defineStore('surveys', () => {
     new Promise(resolve => setTimeout(resolve, ms))
 
   // 獲取所有問卷
-  async function fetchSurveys() {
+  const fetchSurveys = async () => {
     try {
       loading.value = true
       error.value = null
@@ -151,7 +151,7 @@ export const useSurveysStore = defineStore('surveys', () => {
   }
 
   // 獲取單個問卷
-  async function fetchSurvey(id: string) {
+  const fetchSurvey = async (id: string) => {
     try {
       loading.value = true
       error.value = null
@@ -178,7 +178,7 @@ export const useSurveysStore = defineStore('surveys', () => {
   }
 
   // 創建問卷
-  async function createSurvey(payload: CreateSurveyPayload) {
+  const createSurvey = async (payload: CreateSurveyPayload) => {
     try {
       loading.value = true
       error.value = null
@@ -226,7 +226,7 @@ export const useSurveysStore = defineStore('surveys', () => {
   }
 
   // 更新問卷
-  async function updateSurvey(id: string, payload: UpdateSurveyPayload) {
+  const updateSurvey = async (id: string, payload: UpdateSurveyPayload) => {
     try {
       loading.value = true
       error.value = null
@@ -275,7 +275,7 @@ export const useSurveysStore = defineStore('surveys', () => {
   }
 
   // 刪除問卷
-  async function deleteSurvey(id: string) {
+  const deleteSurvey = async (id: string) => {
     try {
       loading.value = true
       error.value = null
@@ -305,12 +305,12 @@ export const useSurveysStore = defineStore('surveys', () => {
   }
 
   // 清除錯誤
-  function clearError() {
+  const clearError = () => {
     error.value = null
   }
 
   // 重置 store
-  function reset() {
+  const reset = () => {
     surveys.value = []
     loading.value = false
     error.value = null

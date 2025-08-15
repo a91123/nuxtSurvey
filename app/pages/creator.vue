@@ -23,7 +23,7 @@ const formData = reactive({
   questions: [] as Question[],
 })
 
-async function handleSubmit() {
+const handleSubmit = async () => {
   try {
     const payload = {
       title: formData.title.trim(),
@@ -42,7 +42,6 @@ async function handleSubmit() {
       body: payload,
     })
 
-    console.log('🌐 前端: 使用 $fetch 調用創建 API')
     ElMessage.success('已儲存')
     await navigateTo('/')
   } catch (error) {

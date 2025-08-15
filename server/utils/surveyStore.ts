@@ -1,6 +1,6 @@
 // Server 端的 Survey 數據管理 - 模擬數據庫
 import type { Survey, Question, CreateSurveyPayload, UpdateSurveyPayload } from '~~/stores/surveys'
-
+import { v4 as uuid } from 'uuid'
 class ServerSurveyStore {
   private surveys: Map<string, Survey> = new Map()
 
@@ -17,26 +17,26 @@ class ServerSurveyStore {
         status: '已發布',
         questions: [
           {
-            id: 1,
+            id: uuid(),
             type: 'text',
             label: '請輸入您的姓名',
             required: true
           },
           {
-            id: 2,
+            id: uuid(),
             type: 'single',
             label: '您對我們的服務滿意嗎？',
             required: true,
             options: ['非常滿意', '滿意', '普通', '不滿意', '非常不滿意']
           },
           {
-            id: 3,
+            id: uuid(),
             type: 'number',
             label: '您給我們的服務打幾分？（1-10分）',
             required: false
           },
           {
-            id: 4,
+            id: uuid(),
             type: 'date',
             label: '您上次使用我們服務的日期',
             required: false
@@ -52,13 +52,13 @@ class ServerSurveyStore {
         status: '草稿',
         questions: [
           {
-            id: 1,
+            id: uuid(),
             type: 'text',
             label: '您最常使用的功能是什麼？',
             required: true
           },
           {
-            id: 2,
+            id: uuid(),
             type: 'single',
             label: '您會推薦我們的產品給朋友嗎？',
             required: true,
@@ -198,7 +198,7 @@ class ServerSurveyStore {
 // 單例模式 - 全域共享的 store 實例
 let serverStoreInstance: ServerSurveyStore | null = null
 
-export function getServerSurveyStore(): ServerSurveyStore {
+export const getServerSurveyStore = (): ServerSurveyStore => {
   if (!serverStoreInstance) {
     serverStoreInstance = new ServerSurveyStore()
   }

@@ -9,21 +9,21 @@
     </div>
 
     <el-card shadow="never">
-      <el-form :model="form" label-width="84px">
-        <el-form-item label="標題">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="84px">
+        <el-form-item label="標題" prop="title">
           <el-input
             :model-value="title"
             @update:model-value="(value) => emit('update:title', value)"
             placeholder="例如：顧客滿意度調查"
           />
         </el-form-item>
-        <el-form-item label="描述">
+        <el-form-item label="描述" prop="desc">
           <el-input
             :model-value="desc"
             @update:model-value="(value) => emit('update:desc', value)"
             type="textarea"
             :autosize="{ minRows: 3 }"
-            placeholder="可選"
+            placeholder="請輸入描述"
           />
         </el-form-item>
         <el-form-item label="狀態">
@@ -53,7 +53,7 @@
         item-key="id"
         handle=".drag-handle"
         :animation="300"
-        ghost-class="ghostClass"
+        ghost-class="ghost-class"
         class="space-y-3"
       >
         <template #item="{ element: q, index: idx }">
@@ -73,8 +73,13 @@
 
             <div class="grid gap-3 sm:grid-cols-2">
               <div>
-                <span class="block text-sm mb-1">題目標籤</span>
-                <el-input v-model="q.label" placeholder="例如：請輸入您的名字" />
+                <span class="block text-sm mb-1">題目標籤 <span class="text-red-500">*</span></span>
+                <el-input
+                  v-model="q.label"
+                  placeholder="例如：請輸入您的名字"
+                  :class="{ 'border-red-300': !q.label.trim() }"
+                />
+                <span v-if="!q.label.trim()" class="text-xs text-red-500 mt-1">此欄位為必填</span>
               </div>
               <div class="flex items-end">
                 <el-checkbox v-model="q.required">必填</el-checkbox>
@@ -84,32 +89,30 @@
             <!-- 單選題 / 多選題：選項編輯 -->
             <div v-if="q.type === 'single' || q.type === 'multiple'" class="mt-3">
               <span class="block text-sm mb-2">選項</span>
-              <ClientOnly>
-                <draggable
-                  :model-value="optionsWithId(q)"
-                  @update:model-value="(items: any[]) => updateOptions(q, items.map(item => item.text))"
-                  item-key="id"
-                  :animation="200"
-                  ghost-class="option-ghost"
-                  class="space-y-2"
-                >
-                  <template #item="{ element: item, index: oi }">
-                    <div class="flex items-center gap-2">
-                      <span class="cursor-move text-gray-400 hover:text-gray-600">☰</span>
-                      <el-input
-                        :model-value="item.text"
-                        @update:model-value="(value) => updateOptionText(q, oi, value)"
-                        placeholder="選項文字"
-                        class="flex-1"
-                      />
-                      <i
-                        class="fa-regular fa-trash-can text-gray-400 cursor-pointer hover:text-red-600 w-4 h-4 flex items-center justify-center"
-                        @click="removeOption(q, oi)"
-                      ></i>
-                    </div>
-                  </template>
-                </draggable>
-              </ClientOnly>
+              <draggable
+                :model-value="optionsWithId(q)"
+                @update:model-value="(items: any[]) => updateOptions(q, items.map(item => item.text))"
+                item-key="id"
+                :animation="200"
+                ghost-class="option-ghost"
+                class="space-y-2"
+              >
+                <template #item="{ element: item, index: oi }">
+                  <div class="flex items-center gap-2">
+                    <span class="cursor-move text-gray-400 hover:text-gray-600">☰</span>
+                    <el-input
+                      :model-value="item.text"
+                      @update:model-value="(value) => updateOptionText(q, oi, value)"
+                      placeholder="選項文字"
+                      class="flex-1"
+                    />
+                    <i
+                      class="fa-regular fa-trash-can text-gray-400 cursor-pointer hover:text-red-600 w-4 h-4 flex items-center justify-center"
+                      @click="removeOption(q, oi)"
+                    ></i>
+                  </div>
+                </template>
+              </draggable>
               <el-button @click="addOption(q)" class="mt-2">＋ 新增選項</el-button>
             </div>
 
@@ -150,7 +153,7 @@
 
 <script setup lang="ts">
 import draggable from 'vuedraggable'
-import { ElMessage } from 'element-plus'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { v4 as uuidv4 } from 'uuid'
 import type { QType, Question, SurveyFormData } from '~~/stores/surveys'
 
@@ -199,8 +202,22 @@ const questions = computed({
   set: (value) => emit('update:questions', value),
 })
 
+// Form reference and validation rules
+const formRef = ref<FormInstance>()
+
+const rules = reactive<FormRules>({
+  title: [
+    { required: true, message: '請輸入標題', trigger: 'blur' },
+    { min: 1, max: 100, message: '標題長度應在 1 到 100 個字符之間', trigger: 'blur' },
+  ],
+  desc: [
+    { required: true, message: '請輸入描述', trigger: 'blur' },
+    { min: 1, max: 500, message: '描述長度應在 1 到 500 個字符之間', trigger: 'blur' },
+  ],
+})
+
 // Question management functions
-function addQuestion(type: QType) {
+const addQuestion = (type: QType) => {
   const base = { id: uuidv4(), type, label: defaultLabel(type), required: false } as Question
   if (type === 'single' || type === 'multiple') base.options = ['選項 1', '選項 2']
 
@@ -215,7 +232,7 @@ function addQuestion(type: QType) {
   })
 }
 
-function defaultLabel(type: QType) {
+const defaultLabel = (type: QType) => {
   switch (type) {
     case 'number':
       return '數字題'
@@ -232,7 +249,7 @@ function defaultLabel(type: QType) {
   }
 }
 
-function removeQuestion(id: string) {
+const removeQuestion = (id: string) => {
   const newQuestions = props.questions.filter((q) => q.id !== id)
   emit('update:questions', newQuestions)
 }
@@ -244,12 +261,12 @@ const optionsWithId = (q: Question) =>
   }))
 
 // 通用的問題更新函數
-function updateQuestion(questionId: string, updateFn: (question: Question) => Question) {
+const updateQuestion = (questionId: string, updateFn: (question: Question) => Question) => {
   const newQuestions = props.questions.map((q) => (q.id === questionId ? updateFn({ ...q }) : q))
   emit('update:questions', newQuestions)
 }
 
-function addOption(q: Question) {
+const addOption = (q: Question) => {
   if (!q.id) return
   updateQuestion(q.id, (question) => ({
     ...question,
@@ -257,7 +274,7 @@ function addOption(q: Question) {
   }))
 }
 
-function removeOption(q: Question, idx: number) {
+const removeOption = (q: Question, idx: number) => {
   if (!q.id) return
   updateQuestion(q.id, (question) => ({
     ...question,
@@ -265,7 +282,7 @@ function removeOption(q: Question, idx: number) {
   }))
 }
 
-function updateOptions(q: Question, newOptions: string[]) {
+const updateOptions = (q: Question, newOptions: string[]) => {
   if (!q.id) return
   updateQuestion(q.id, (question) => ({
     ...question,
@@ -273,7 +290,7 @@ function updateOptions(q: Question, newOptions: string[]) {
   }))
 }
 
-function updateOptionText(q: Question, index: number, value: string) {
+const updateOptionText = (q: Question, index: number, value: string) => {
   if (!q.id) return
   updateQuestion(q.id, (question) => {
     const newOptions = [...(question.options || [])]
@@ -283,18 +300,35 @@ function updateOptionText(q: Question, index: number, value: string) {
 }
 
 // Submit function
-function submit() {
-  if (!props.title.trim()) {
-    ElMessage.error('請輸入標題')
+const submit = async () => {
+  if (!formRef.value) return
+
+  // 檢查是否有問題標題為空的問題
+  const emptyLabelQuestions = props.questions.filter((q) => !q.label.trim())
+  if (emptyLabelQuestions.length > 0) {
+    ElMessage.error('所有問題都必須填寫標題')
     return
   }
 
-  emit('submit')
+  // 檢查是否至少有一題
+  if (props.questions.length === 0) {
+    ElMessage.error('至少需要新增一個問題')
+    return
+  }
+
+  try {
+    const valid = await formRef.value.validate()
+    if (valid) {
+      emit('submit')
+    }
+  } catch (error) {
+    ElMessage.error('請檢查表單輸入')
+  }
 }
 </script>
 
 <style>
-.ghostClass {
+.ghost-class {
   border-top: 1px solid rgb(26, 183, 194);
 }
 

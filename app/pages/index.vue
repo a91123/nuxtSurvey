@@ -45,9 +45,11 @@
       </div>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pr-1">
         <div v-for="s in items" :key="s.id" class="w-full">
-          <el-card shadow="hover" class="relative">
+          <el-card shadow="hover" class="relative h-full">
             <div class="text-lg font-semibold mb-1">{{ s.title }}</div>
-            <div class="text-slate-600 mb-2">{{ s.desc }}</div>
+            <div class="text-slate-600 mb-2 min-h-[1.5rem] line-clamp-2">
+              {{ s.desc && s.desc.length > 30 ? s.desc.substring(0, 20)+ '...' : s.desc }}
+            </div>
             <div class="text-sm text-slate-500 mb-1">
               狀態：<span :class="s.status === 'published' ? 'text-green-600' : 'text-yellow-600'">
                 {{ s.status === 'published' ? '已發布' : '草稿' }}
