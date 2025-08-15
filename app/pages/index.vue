@@ -14,7 +14,7 @@
         </div>
         <div class="w-40">
           <el-select v-model="status" placeholder="狀態" clearable class="w-full">
-            <el-option label="全部" value="" />
+            <el-option label="全部" value="all" />
             <el-option label="已發布" value="published" />
             <el-option label="草稿" value="draft" />
           </el-select>
@@ -57,10 +57,15 @@
             <div class="text-xs text-slate-400 mt-1">最後更新：{{ s.updatedAt }}</div>
             <template #footer>
               <div class="flex gap-2 justify-end">
-                <el-button size="small" plain>編輯</el-button>
+                <NuxtLink :to="`/editor/${s.id}`">
+                  <el-button size="small" plain>編輯</el-button>
+                </NuxtLink>
                 <el-button size="small" plain>統計</el-button>
                 <el-button size="small" plain>複製連結</el-button>
-                <i class="fa-regular fa-trash-can text-[#a09f9f] cursor-pointer hover:text-red-600 absolute top-2 right-2"></i>
+                <i
+                  class="fa-regular fa-trash-can text-[#a09f9f] cursor-pointer hover:text-red-600 absolute top-2 right-2"
+                  @click="handleDelete(s.id.toString(), s.title)"
+                ></i>
               </div>
             </template>
           </el-card>
@@ -83,8 +88,11 @@
 </template>
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
+import { ElMessageBox, ElMessage } from 'element-plus'
+import type { SurveyListResponse } from '../../types/index'
+
 const title = ref('')
-const status = ref('')
+const status = ref('all')
 const sort = ref<'recent' | 'responses' | 'questions' | 'title-asc' | 'title-desc'>('recent')
 const page = ref(1)
 const pageSize = ref(6)
@@ -97,10 +105,33 @@ const applyDebounce = useDebounceFn((v: string) => {
 
 watch(title, (v) => applyDebounce(v))
 
-const { data, pending, error } = await useFetch('/api/surveys', {
+const { data, pending, error, refresh } = await useFetch<SurveyListResponse>('/api/surveys', {
   query: { title: titleDebounced, status, sort, page, pageSize },
   watch: [titleDebounced, status, sort, page, pageSize],
 })
 const items = computed(() => data.value?.items || [])
 const total = computed(() => data.value?.total || 0)
+
+// 刪除功能
+const handleDelete = async (surveyId: string, surveyTitle: string) => {
+  try {
+    await ElMessageBox.confirm(`確定要刪除問卷「${surveyTitle}」嗎？此操作無法復原。`, '刪除確認', {
+      confirmButtonText: '確定刪除',
+      cancelButtonText: '取消',
+      type: 'warning',
+      confirmButtonClass: 'el-button--danger',
+    })
+    await $fetch<any>(`/api/surveys/${surveyId}`, {
+      method: 'DELETE',
+    })
+    ElMessage.success('問卷刪除成功')
+    await refresh()
+  } catch (error: any) {
+    if (error === 'cancel') {
+      return
+    }
+    console.error('刪除問卷失敗:', error)
+    ElMessage.error(error?.data?.statusMessage || '刪除問卷失敗')
+  }
+}
 </script>

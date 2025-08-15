@@ -16,11 +16,13 @@
     "@fortawesome/vue-fontawesome": "^3.1.1",
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@pinia/nuxt": "^0.11.2",
+    "@types/uuid": "^10.0.0",
     "@vueuse/core": "^13.6.0",
     "element-plus": "^2.10.7",
     "lz-string": "^1.5.0",
     "nuxt": "^4.0.3",
     "pinia": "^3.0.3",
+    "uuid": "^11.1.0",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1",
     "vuedraggable": "^4.1.0"
