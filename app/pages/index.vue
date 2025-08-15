@@ -43,7 +43,7 @@
           class="mb-4"
         />
       </div>
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pr-1">
+      <div v-else-if="items.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pr-1">
         <div v-for="s in items" :key="s.id" class="w-full">
           <el-card shadow="hover" class="relative h-full">
             <div class="text-lg font-semibold mb-1">{{ s.title }}</div>
@@ -72,6 +72,9 @@
             </template>
           </el-card>
         </div>
+      </div>
+      <div v-else class="w-full flex justify-center items-center h-full">
+        <el-empty description="目前沒有問卷" />
       </div>
     </div>
 
