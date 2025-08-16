@@ -106,6 +106,101 @@ const getDefaultResponses = (): SurveyResponse[] => {
       ],
       submittedAt: createTimeStamp(),
       userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    },
+    {
+      id: 'response2',
+      surveyId: 'survey1',
+      answers: [
+        { id: 'q1', value: '非常滿意' },
+        { id: 'q2', value: ['功能豐富', '設計美觀'] },
+        { id: 'q3', value: '介面很直觀，使用起來很順暢' }
+      ],
+      submittedAt: createTimeStamp(),
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0'
+    },
+    {
+      id: 'response3',
+      surveyId: 'survey1',
+      answers: [
+        { id: 'q1', value: '普通' },
+        { id: 'q2', value: ['價格', '性能'] },
+        { id: 'q3', value: '還可以，但希望價格能更便宜一些' }
+      ],
+      submittedAt: createTimeStamp(),
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'
+    },
+    {
+      id: 'response4',
+      surveyId: 'survey1',
+      answers: [
+        { id: 'q1', value: '滿意' },
+        { id: 'q2', value: ['易用性', '設計美觀', '功能豐富'] },
+        { id: 'q3', value: '整體體驗不錯，繼續保持！' }
+      ],
+      submittedAt: createTimeStamp(),
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    },
+    {
+      id: 'response5',
+      surveyId: 'survey1',
+      answers: [
+        { id: 'q1', value: '非常滿意' },
+        { id: 'q2', value: ['性能', '易用性'] },
+        { id: 'q3', value: '速度很快，操作簡單易懂' }
+      ],
+      submittedAt: createTimeStamp(),
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15'
+    },
+    {
+      id: 'response6',
+      surveyId: 'survey1',
+      answers: [
+        { id: 'q1', value: '不滿意' },
+        { id: 'q2', value: ['功能豐富'] },
+        { id: 'q3', value: '功能雖然多，但使用起來有點複雜' }
+      ],
+      submittedAt: createTimeStamp(),
+      userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    },
+    {
+      id: 'response7',
+      surveyId: 'survey2',
+      answers: [
+        { id: 'q4', value: 8 },
+        { id: 'q5', value: '願意' }
+      ],
+      submittedAt: createTimeStamp(),
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 OPR/106.0.0.0'
+    },
+    {
+      id: 'response8',
+      surveyId: 'survey2',
+      answers: [
+        { id: 'q4', value: 9 },
+        { id: 'q5', value: '非常願意' }
+      ],
+      submittedAt: createTimeStamp(),
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0'
+    },
+    {
+      id: 'response9',
+      surveyId: 'survey2',
+      answers: [
+        { id: 'q4', value: 6 },
+        { id: 'q5', value: '不確定' }
+      ],
+      submittedAt: createTimeStamp(),
+      userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1'
+    },
+    {
+      id: 'response10',
+      surveyId: 'survey2',
+      answers: [
+        { id: 'q4', value: 7 },
+        { id: 'q5', value: '願意' }
+      ],
+      submittedAt: createTimeStamp(),
+      userAgent: 'Mozilla/5.0 (Android 14; Mobile; rv:121.0) Gecko/121.0 Firefox/121.0'
     }
   ]
 }

@@ -68,3 +68,40 @@ export const detectBrowser = (userAgent: string): string => {
   
   return '其他瀏覽器'
 }
+
+// ============ 瀏覽器顏色映射 ============
+
+export const BROWSER_COLORS: Record<string, { gradient: string; text: string }> = {
+  'Google Chrome': { 
+    gradient: 'bg-gradient-to-r from-blue-500 to-blue-600', 
+    text: 'text-blue-600' 
+  },
+  'Mozilla Firefox': { 
+    gradient: 'bg-gradient-to-r from-orange-500 to-orange-600', 
+    text: 'text-orange-600' 
+  },
+  'Microsoft Edge': { 
+    gradient: 'bg-gradient-to-r from-cyan-500 to-cyan-600', 
+    text: 'text-cyan-600' 
+  },
+  'Safari': { 
+    gradient: 'bg-gradient-to-r from-gray-500 to-gray-600', 
+    text: 'text-gray-600' 
+  },
+  'Opera': { 
+    gradient: 'bg-gradient-to-r from-red-500 to-red-600', 
+    text: 'text-red-600' 
+  },
+  'Unknown': { 
+    gradient: 'bg-gradient-to-r from-purple-500 to-purple-600', 
+    text: 'text-purple-600' 
+  },
+  '其他瀏覽器': { 
+    gradient: 'bg-gradient-to-r from-indigo-500 to-indigo-600', 
+    text: 'text-indigo-600' 
+  }
+}
+
+export const getBrowserColor = (browserName: string) => {
+  return BROWSER_COLORS[browserName] || BROWSER_COLORS['其他瀏覽器']
+}

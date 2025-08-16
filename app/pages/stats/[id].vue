@@ -218,12 +218,15 @@
                   <span class="text-sm font-medium text-gray-800">{{ browserStat.browser }}</span>
                   <div class="flex items-center gap-2">
                     <span class="text-sm text-gray-600">{{ browserStat.count }} {{ $t('common.people', '人') }}</span>
-                    <span class="text-sm font-semibold text-blue-600">{{ browserStat.percentage }}%</span>
+                    <span class="text-sm font-semibold" :class="getBrowserColor(browserStat.browser).text"
+                      >{{ browserStat.percentage }}%</span
+                    >
                   </div>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-3">
                   <div
-                    class="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-300"
+                    class="h-3 rounded-full transition-all duration-300"
+                    :class="getBrowserColor(browserStat.browser).gradient"
                     :style="{ width: browserStat.percentage + '%' }"
                   ></div>
                 </div>
@@ -277,7 +280,7 @@
 </template>
 
 <script setup lang="ts">
-import { QUESTION_TYPE_LABELS, detectBrowser } from '~~/utils/map'
+import { QUESTION_TYPE_LABELS, detectBrowser, getBrowserColor } from '~~/utils/map'
 
 definePageMeta({
   layout: false,
