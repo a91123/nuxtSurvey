@@ -34,6 +34,7 @@
     "updated_at": "Updated At",
     "draft": "Draft",
     "published": "Published",
+    "publish": "Publish",
     "create_new": "Create Survey",
     "edit_survey": "Edit Survey",
     "survey_form": "Survey Form",

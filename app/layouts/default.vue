@@ -5,7 +5,7 @@
         <!-- 主導航 - 可點擊的標題 -->
         <div class="flex items-center space-x-6">
           <NuxtLink to="/" class="text-lg font-bold text-blue-600 hover:text-blue-700 transition-colors duration-200">
-            {{ $t('header.title') }}
+            NuxtSurvey
           </NuxtLink>
         </div>
 

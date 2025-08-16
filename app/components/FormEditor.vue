@@ -30,7 +30,7 @@
         <el-form-item :label="$t('editor.form_status_label')">
           <el-radio-group v-model="status">
             <el-radio label="draft">{{ $t('survey.draft') }}</el-radio>
-            <el-radio label="published">{{ $t('survey.published') }}</el-radio>
+            <el-radio label="published">{{ $t('survey.publish') }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
