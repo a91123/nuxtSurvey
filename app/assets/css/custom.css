@@ -1,0 +1,25 @@
+.el-select .el-select__suffix .el-select__caret {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  transition: transform 0.3s ease;
+}
+
+.el-icon {
+  font-family: element-icons !important;
+}
+
+.el-select__caret.el-icon {
+  font-size: 14px !important;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.el-select__caret {
+  font-size: 14px !important;
+  transform: none !important;
+}
+
+.el-select__caret.is-reverse {
+  transform: rotate(180deg) !important;
+}

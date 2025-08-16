@@ -1,2 +1,30 @@
-User-Agent: *
-Disallow:
+# robots.txt for 我的問卷系統
+# 允許搜索引擎索引所有公開內容
+
+# 允許所有搜索引擎訪問
+User-agent: *
+Allow: /
+
+# 禁止索引管理相關頁面
+Disallow: /editor/
+Disallow: /stats/
+Disallow: /api/
+
+# 禁止索引問卷填寫頁面（避免搜索引擎干擾數據）
+Disallow: /survey/
+
+# 允許索引首頁和公開內容
+Allow: /$
+Allow: /creator
+
+# 指定 sitemap 位置
+Sitemap: https://your-domain.com/sitemap.xml
+
+# 搜索引擎爬取頻率建議
+# Google
+User-agent: Googlebot
+Crawl-delay: 1
+
+# Bing
+User-agent: Bingbot
+Crawl-delay: 1

@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "nuxt_survey",
   "type": "module",
   "private": true,
   "scripts": {
@@ -14,11 +14,16 @@
     "@fortawesome/fontawesome-svg-core": "^7.0.0",
     "@fortawesome/free-solid-svg-icons": "^7.0.0",
     "@fortawesome/vue-fontawesome": "^3.1.1",
+    "@nuxtjs/i18n": "^10.0.5",
     "@nuxtjs/tailwindcss": "^6.12.1",
     "@pinia/nuxt": "^0.11.2",
+    "@types/js-cookie": "^3.0.6",
     "@types/uuid": "^10.0.0",
     "@vueuse/core": "^13.6.0",
+    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "element-plus": "^2.10.7",
+    "js-cookie": "^3.0.5",
     "lz-string": "^1.5.0",
     "nuxt": "^4.0.3",
     "pinia": "^3.0.3",
@@ -31,6 +36,7 @@
     "@element-plus/nuxt": "^1.1.4",
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.6",
+    "sass": "^1.90.0",
     "tailwindcss": "^3.4.17"
   }
 }

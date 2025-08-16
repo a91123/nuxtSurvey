@@ -1,29 +1,32 @@
 <template>
   <section class="p-6 max-w-7xl mx-auto h-full min-h-0 grid gap-4">
+    <!-- 麵包屑導航 -->
+    <Breadcrumb :items="[]" />
+
     <div class="h-[100px]">
       <div class="flex justify-between items-center mb-3">
-        <h1 class="text-2xl font-bold">問卷管理</h1>
+        <h1 class="text-2xl font-bold">{{ $t('header.survey_management') }}</h1>
         <NuxtLink to="/creator">
-          <el-button type="primary">新增問卷</el-button>
+          <el-button type="primary">{{ $t('survey.create_new') }}</el-button>
         </NuxtLink>
       </div>
 
       <div class="flex flex-wrap gap-3 items-center">
         <div class="flex-1 min-w-[200px]">
-          <el-input v-model="title" placeholder="搜尋問卷標題" clearable />
+          <el-input v-model="title" :placeholder="$t('ui.search_placeholder')" clearable />
         </div>
         <div class="w-40">
-          <el-select v-model="status" placeholder="狀態" clearable class="w-full">
-            <el-option label="全部" value="all" />
-            <el-option label="已發布" value="published" />
-            <el-option label="草稿" value="draft" />
+          <el-select v-model="status" :placeholder="$t('ui.status_placeholder')" clearable class="w-full">
+            <el-option :label="$t('ui.all_status')" value="all" />
+            <el-option :label="$t('survey.published')" value="published" />
+            <el-option :label="$t('survey.draft')" value="draft" />
           </el-select>
         </div>
         <div class="w-44">
-          <el-select v-model="sort" placeholder="排序" class="w-full">
-            <el-option label="最近更新" value="recent" />
-            <el-option label="回覆數多到少" value="responses" />
-            <el-option label="題數多到少" value="questions" />
+          <el-select v-model="sort" :placeholder="$t('ui.sort_placeholder')" class="w-full">
+            <el-option :label="$t('ui.recent_update')" value="recent" />
+            <el-option :label="$t('ui.most_responses')" value="responses" />
+            <el-option :label="$t('ui.most_questions')" value="questions" />
           </el-select>
         </div>
       </div>
@@ -38,8 +41,8 @@
           type="error"
           :closable="false"
           show-icon
-          title="載入失敗"
-          :description="error?.message"
+          :title="$t('messages.load_failed')"
+          :description="$t('messages.loading_error')"
           class="mb-4"
         />
       </div>
@@ -47,34 +50,45 @@
         <div v-for="s in items" :key="s.id" class="w-full">
           <el-card shadow="hover" class="relative h-full">
             <div class="text-lg font-semibold mb-1">{{ s.title }}</div>
-            <div class="text-slate-600 mb-2 min-h-[1.5rem] line-clamp-2">
-              {{ s.desc && s.desc.length > 30 ? s.desc.substring(0, 20)+ '...' : s.desc }}
+            <div class="text-slate-600 mb-2 min-h-[1.5rem]">
+              {{ s.description && s.description.length > 30 ? s.description.substring(0, 20) + '...' : s.description }}
             </div>
             <div class="text-sm text-slate-500 mb-1">
-              狀態：<span :class="s.status === 'published' ? 'text-green-600' : 'text-yellow-600'">
-                {{ s.status === 'published' ? '已發布' : '草稿' }}
+              {{ $t('survey.status') }}：<span :class="s.status === 'published' ? 'text-green-600' : 'text-yellow-600'">
+                {{ $t(`survey.${s.status}`) }}
               </span>
             </div>
-            <div class="text-sm text-slate-500">題數：{{ s.questions }} · 回覆：{{ s.responses }}</div>
-            <div class="text-xs text-slate-400 mt-1">最後更新：{{ s.updatedAt }}</div>
+            <div class="text-sm text-slate-500">
+              {{ $t('survey.questions') }}：{{ s.questions }} · {{ $t('survey.responses') }}：{{ s.responses }}
+            </div>
+            <div class="text-xs text-slate-400 mt-1">
+              {{ $t('survey.updated_at') }}：{{ formatDateTime(s.updatedAt) }}
+            </div>
             <template #footer>
               <div class="flex gap-2 justify-end">
                 <NuxtLink :to="`/editor/${s.id}`">
-                  <el-button size="small" plain>編輯</el-button>
+                  <el-button size="small" plain>{{ $t('common.edit') }}</el-button>
                 </NuxtLink>
-                <el-button size="small" plain>統計</el-button>
-                <el-button size="small" plain>複製連結</el-button>
-                <i
-                  class="fa-regular fa-trash-can text-[#a09f9f] cursor-pointer hover:text-red-600 absolute top-2 right-2"
+                <NuxtLink v-if="s.status === 'published'" :to="`/stats/${s.id}`">
+                  <el-button size="small" plain>{{ $t('header.statistics') }}</el-button>
+                </NuxtLink>
+                <el-button v-if="s.status === 'published'" size="small" plain @click="handleCopyLink(s.id.toString())">
+                  {{ $t('survey.copy_link') }}
+                </el-button>
+                <button
+                  class="absolute top-3 right-3 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
                   @click="handleDelete(s.id.toString(), s.title)"
-                ></i>
+                  :title="$t('survey.delete_confirm')"
+                >
+                  <i class="fa-regular fa-trash-can text-sm"></i>
+                </button>
               </div>
             </template>
           </el-card>
         </div>
       </div>
       <div v-else class="w-full flex justify-center items-center h-full">
-        <el-empty description="目前沒有問卷" />
+        <el-empty :description="$t('ui.no_surveys')" />
       </div>
     </div>
 
@@ -92,9 +106,12 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useDebounceFn } from '@vueuse/core'
+import { useDebounceFn, useClipboard } from '@vueuse/core'
 import { ElMessageBox, ElMessage } from 'element-plus'
-import type { SurveyListResponse } from '../../types/index'
+import type { SurveyListAPIItem, APIResponse } from '~~/types/index'
+
+const { t } = useI18n()
+const { formatDateTime } = useDateFormatter()
 
 const title = ref('')
 const status = ref('all')
@@ -110,33 +127,70 @@ const applyDebounce = useDebounceFn((v: string) => {
 
 watch(title, (v) => applyDebounce(v))
 
-const { data, pending, error, refresh } = await useFetch<SurveyListResponse>('/api/surveys', {
-  query: { title: titleDebounced, status, sort, page, pageSize },
-  watch: [titleDebounced, status, sort, page, pageSize],
-})
-const items = computed(() => data.value?.items || [])
-const total = computed(() => data.value?.total || 0)
+// 建立反應式查詢參數
+const queryParams = computed(() => ({
+  search: titleDebounced.value,
+  status: status.value,
+  sort: sort.value,
+  page: page.value.toString(),
+  pageSize: pageSize.value.toString(),
+}))
 
-// 刪除功能
+const {
+  data: surveysData,
+  pending,
+  error,
+  refresh,
+} = await useFetch<APIResponse<SurveyListAPIItem[]>>('/api/surveys', {
+  query: queryParams,
+})
+
+const items = computed(() => {
+  return surveysData.value?.success ? surveysData.value.data || [] : []
+})
+
+const total = computed(() => {
+  return surveysData.value?.pagination?.total || 0
+})
+
+const { copy, isSupported } = useClipboard()
+const handleCopyLink = async (surveyId: string) => {
+  const surveyUrl = `${window.location.origin}/survey/${surveyId}`
+  if (isSupported.value) {
+    await copy(surveyUrl)
+    ElMessage.success(t('messages.copy_success'))
+  } else {
+    ElMessageBox.alert(`請手動複製此連結：\n${surveyUrl}`, t('survey.copy_link'), {
+      confirmButtonText: t('common.confirm'),
+      type: 'info',
+    })
+  }
+}
+
 const handleDelete = async (surveyId: string, surveyTitle: string) => {
   try {
-    await ElMessageBox.confirm(`確定要刪除問卷「${surveyTitle}」嗎？此操作無法復原。`, '刪除確認', {
-      confirmButtonText: '確定刪除',
-      cancelButtonText: '取消',
-      type: 'warning',
-      confirmButtonClass: 'el-button--danger',
-    })
-    await $fetch<any>(`/api/surveys/${surveyId}`, {
+    await ElMessageBox.confirm(
+      t('messages.delete_confirm_message', { title: surveyTitle }),
+      t('messages.delete_confirm_title'),
+      {
+        confirmButtonText: t('messages.delete_confirm_button'),
+        cancelButtonText: t('common.cancel'),
+        type: 'warning',
+        confirmButtonClass: 'el-button--danger',
+      },
+    )
+    await $fetch(`/api/surveys/${surveyId}`, {
       method: 'DELETE',
     })
-    ElMessage.success('問卷刪除成功')
+
+    ElMessage.success(t('messages.delete_success'))
     await refresh()
   } catch (error: any) {
     if (error === 'cancel') {
       return
     }
     console.error('刪除問卷失敗:', error)
-    ElMessage.error(error?.data?.statusMessage || '刪除問卷失敗')
+    ElMessage.error(error?.message || t('messages.delete_error'))
   }
 }
 </script>

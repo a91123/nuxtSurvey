@@ -1,35 +1,36 @@
 <template>
-  <section class="p-6 max-w-4xl mx-auto space-y-6">
+  <section class="space-y-6">
     <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold">{{ isEditing ? '編輯問卷' : '新增問卷' }}</h1>
+      <h1 class="text-2xl font-bold">{{ isEditing ? $t('editor.title') : $t('editor.create_title') }}</h1>
       <div class="flex gap-2">
-        <el-button @click="navigateTo('/')">返回列表</el-button>
-        <el-button type="primary" @click="submit">儲存</el-button>
+        <el-button @click="navigateTo('/')">{{ $t('navigation.back_to_list') }}</el-button>
+        <el-button type="primary" @click="submit">{{ $t('common.save') }}</el-button>
       </div>
     </div>
 
     <el-card shadow="never">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="84px">
-        <el-form-item label="標題" prop="title">
-          <el-input
-            :model-value="title"
-            @update:model-value="(value) => emit('update:title', value)"
-            placeholder="例如：顧客滿意度調查"
-          />
+      <el-form
+        ref="formRef"
+        label-position="top"
+        :model="{ title, description, status }"
+        :rules="rules"
+        label-width="84px"
+      >
+        <el-form-item :label="$t('editor.form_title_label')" prop="title">
+          <el-input v-model="title" :placeholder="$t('editor.form_title_placeholder')" />
         </el-form-item>
-        <el-form-item label="描述" prop="desc">
+        <el-form-item :label="$t('editor.form_description_label')" prop="description">
           <el-input
-            :model-value="desc"
-            @update:model-value="(value) => emit('update:desc', value)"
+            v-model="description"
             type="textarea"
             :autosize="{ minRows: 3 }"
-            placeholder="請輸入描述"
+            :placeholder="$t('editor.form_description_placeholder')"
           />
         </el-form-item>
-        <el-form-item label="狀態">
-          <el-radio-group :model-value="status" @update:model-value="(value: any) => emit('update:status', value)">
-            <el-radio label="草稿" />
-            <el-radio label="已發布" />
+        <el-form-item :label="$t('editor.form_status_label')">
+          <el-radio-group v-model="status">
+            <el-radio label="draft">{{ $t('survey.draft') }}</el-radio>
+            <el-radio label="published">{{ $t('survey.published') }}</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -37,13 +38,19 @@
 
     <el-card shadow="never">
       <div class="flex flex-wrap items-center gap-2">
-        <span class="text-sm text-slate-600 mr-2">新增題目：</span>
-        <el-button type="primary" plain @click="addQuestion('text')">純文字</el-button>
-        <el-button type="primary" plain @click="addQuestion('number')">數字</el-button>
-        <el-button type="primary" plain @click="addQuestion('date')">日期</el-button>
-        <el-button type="primary" plain @click="addQuestion('time')">時間</el-button>
-        <el-button type="primary" plain @click="addQuestion('single')">單選</el-button>
-        <el-button type="primary" plain @click="addQuestion('multiple')">多選</el-button>
+        <span class="text-sm text-slate-600 mr-2">{{ $t('ui.add_question') }}</span>
+        <el-button type="primary" plain @click="addQuestion('text')">{{ $t('editor.question_type_text') }}</el-button>
+        <el-button type="primary" plain @click="addQuestion('number')">{{
+          $t('editor.question_type_number')
+        }}</el-button>
+        <el-button type="primary" plain @click="addQuestion('date')">{{ $t('editor.question_type_date') }}</el-button>
+        <el-button type="primary" plain @click="addQuestion('time')">{{ $t('editor.question_type_time') }}</el-button>
+        <el-button type="primary" plain @click="addQuestion('single')">{{
+          $t('editor.question_type_single')
+        }}</el-button>
+        <el-button type="primary" plain @click="addQuestion('multiple')">{{
+          $t('editor.question_type_multiple')
+        }}</el-button>
       </div>
     </el-card>
 
@@ -62,33 +69,81 @@
               <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
                   <span class="drag-handle cursor-grab select-none">≡</span>
-                  <span class="text-sm text-slate-500">{{ idx + 1 }}. {{ q.type }}</span>
+                  <span class="text-sm text-slate-500">{{ idx + 1 }}. {{ $t(`question.${q.type}`) }}</span>
                 </div>
-                <i
-                  class="fa-regular fa-trash-can text-gray-400 cursor-pointer hover:text-red-600 w-4 h-4 flex items-center justify-center"
+                <button
+                  class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded transition-colors duration-200"
                   @click="removeQuestion(q.id)"
-                ></i>
+                  :title="$t('ui.delete_question')"
+                >
+                  <i class="fa-regular fa-trash-can text-xs"></i>
+                </button>
               </div>
             </template>
 
             <div class="grid gap-3 sm:grid-cols-2">
               <div>
-                <span class="block text-sm mb-1">題目標籤 <span class="text-red-500">*</span></span>
+                <span class="block text-sm mb-1"
+                  >{{ $t('ui.question_title_label') }} <span class="text-red-500">*</span></span
+                >
                 <el-input
-                  v-model="q.label"
-                  placeholder="例如：請輸入您的名字"
-                  :class="{ 'border-red-300': !q.label.trim() }"
+                  v-model="q.title"
+                  :placeholder="$t('editor.question_title_placeholder')"
+                  :class="{ 'border-red-300': !q.title?.trim() }"
                 />
-                <span v-if="!q.label.trim()" class="text-xs text-red-500 mt-1">此欄位為必填</span>
+                <span v-if="!q.title?.trim()" class="text-xs text-red-500 mt-1">{{
+                  $t('ui.question_title_required')
+                }}</span>
               </div>
               <div class="flex items-end">
-                <el-checkbox v-model="q.required">必填</el-checkbox>
+                <el-checkbox v-model="q.required">{{ $t('ui.required_field') }}</el-checkbox>
+              </div>
+            </div>
+
+            <!-- 提示文字設定 -->
+            <div class="mt-3">
+              <span class="block text-sm mb-1">{{ $t('ui.tip_label') }}</span>
+              <el-input
+                v-model="q.tip"
+                :placeholder="$t('ui.tip_placeholder')"
+                type="textarea"
+                :autosize="{ minRows: 2, maxRows: 3 }"
+              />
+            </div>
+
+            <!-- 數字題型的 min/max 設定 -->
+            <div v-if="q.type === 'number'" class="mt-3">
+              <div class="flex items-center gap-2 text-sm">
+                <span class="text-gray-600">數值範圍：</span>
+                <div class="flex items-center gap-1">
+                  <el-input-number
+                    v-model="q.min"
+                    placeholder="最小值"
+                    :precision="0"
+                    :max="q.max !== undefined ? q.max : undefined"
+                    size="small"
+                    style="width: 80px"
+                    controls-position="right"
+                    :value-on-clear="undefined"
+                  />
+                  <span class="text-gray-400 mx-1">～</span>
+                  <el-input-number
+                    v-model="q.max"
+                    placeholder="最大值"
+                    :precision="0"
+                    :min="q.min !== undefined ? q.min : undefined"
+                    size="small"
+                    style="width: 80px"
+                    controls-position="right"
+                    :value-on-clear="undefined"
+                  />
+                </div>
               </div>
             </div>
 
             <!-- 單選題 / 多選題：選項編輯 -->
             <div v-if="q.type === 'single' || q.type === 'multiple'" class="mt-3">
-              <span class="block text-sm mb-2">選項</span>
+              <span class="block text-sm mb-2">{{ $t('ui.options_label') }}</span>
               <draggable
                 :model-value="optionsWithId(q)"
                 @update:model-value="(items: any[]) => updateOptions(q, items.map(item => item.text))"
@@ -103,43 +158,56 @@
                     <el-input
                       :model-value="item.text"
                       @update:model-value="(value) => updateOptionText(q, oi, value)"
-                      placeholder="選項文字"
+                      :placeholder="$t('ui.option_placeholder')"
                       class="flex-1"
                     />
-                    <i
-                      class="fa-regular fa-trash-can text-gray-400 cursor-pointer hover:text-red-600 w-4 h-4 flex items-center justify-center"
+                    <button
+                      class="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded transition-colors duration-200"
                       @click="removeOption(q, oi)"
-                    ></i>
+                      :title="$t('ui.delete_option')"
+                    >
+                      <i class="fa-regular fa-trash-can text-xs"></i>
+                    </button>
                   </div>
                 </template>
               </draggable>
-              <el-button @click="addOption(q)" class="mt-2">＋ 新增選項</el-button>
+              <el-button @click="addOption(q)" class="mt-2">＋ {{ $t('ui.add_option') }}</el-button>
             </div>
 
             <!-- 預覽區（依型別顯示對應輸入） -->
             <div class="mt-3">
-              <span class="block text-xs text-slate-500 mb-1">預覽</span>
-              <el-input v-if="q.type === 'text'" placeholder="文字輸入" disabled />
-              <el-input-number v-else-if="q.type === 'number'" :disabled="true" class="w-full" />
+              <span class="block text-xs text-slate-500 mb-1">{{ $t('ui.preview_label') }}</span>
+              <el-input v-if="q.type === 'text'" :placeholder="$t('ui.text_input_placeholder')" disabled />
+              <el-input-number
+                v-else-if="q.type === 'number'"
+                :disabled="true"
+                :placeholder="$t('ui.number_placeholder')"
+                class="min-w-[180px]"
+              />
               <el-date-picker
                 v-else-if="q.type === 'date'"
                 type="date"
-                placeholder="選擇日期"
+                :placeholder="$t('ui.date_placeholder')"
                 :disabled="true"
                 class="w-full"
               />
-              <el-time-picker v-else-if="q.type === 'time'" placeholder="選擇時間" :disabled="true" class="w-full" />
+              <el-time-picker
+                v-else-if="q.type === 'time'"
+                :placeholder="$t('ui.time_placeholder')"
+                :disabled="true"
+                class="w-full"
+              />
               <div v-else-if="q.type === 'single'" class="space-y-2">
                 <el-radio-group :model-value="undefined" disabled>
-                  <el-radio v-for="(opt, oi) in q.options" :key="oi" :label="oi">{{
-                    opt || `選項 ${oi + 1}`
+                  <el-radio v-for="(opt, oi) in q.options" :key="oi" :value="opt">{{
+                    opt || $t('ui.option_default', { number: oi + 1 })
                   }}</el-radio>
                 </el-radio-group>
               </div>
               <div v-else-if="q.type === 'multiple'" class="space-y-2">
                 <el-checkbox-group :model-value="[]" disabled>
-                  <el-checkbox v-for="(opt, oi) in q.options" :key="oi" :label="oi">{{
-                    opt || `選項 ${oi + 1}`
+                  <el-checkbox v-for="(opt, oi) in q.options" :key="oi" :value="opt">{{
+                    opt || $t('ui.option_default', { number: oi + 1 })
                   }}</el-checkbox>
                 </el-checkbox-group>
               </div>
@@ -155,46 +223,46 @@
 import draggable from 'vuedraggable'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { v4 as uuidv4 } from 'uuid'
-import type { QType, Question, SurveyFormData } from '~~/stores/surveys'
+import type { QType, Question } from '~~/types/index'
+import { QUESTION_DEFAULT_TITLES, QUESTION_DEFAULT_TIPS } from '~~/utils/map'
 
-// Props
 interface Props {
   title: string
-  desc: string
-  status: '草稿' | '已發布'
+  description: string
+  status: 'draft' | 'published'
   questions: Question[]
   isEditing?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   title: '',
-  desc: '',
-  status: '草稿',
+  description: '',
+  status: 'draft',
   questions: () => [],
   isEditing: false,
 })
 
-// Emits for v-model
 const emit = defineEmits<{
   'update:title': [value: string]
-  'update:desc': [value: string]
-  'update:status': [value: '草稿' | '已發布']
+  'update:description': [value: string]
+  'update:status': [value: 'draft' | 'published']
   'update:questions': [value: Question[]]
   submit: []
 }>()
 
-// 使用 computed 實現雙向綁定
-const form = computed({
-  get: () => ({
-    title: props.title,
-    desc: props.desc,
-    status: props.status,
-  }),
-  set: (value) => {
-    emit('update:title', value.title)
-    emit('update:desc', value.desc)
-    emit('update:status', value.status)
-  },
+const title = computed({
+  get: () => props.title,
+  set: (value) => emit('update:title', value),
+})
+
+const description = computed({
+  get: () => props.description,
+  set: (value) => emit('update:description', value),
+})
+
+const status = computed({
+  get: () => props.status,
+  set: (value) => emit('update:status', value),
 })
 
 const questions = computed({
@@ -202,51 +270,46 @@ const questions = computed({
   set: (value) => emit('update:questions', value),
 })
 
-// Form reference and validation rules
 const formRef = ref<FormInstance>()
+
+const { t } = useI18n()
 
 const rules = reactive<FormRules>({
   title: [
-    { required: true, message: '請輸入標題', trigger: 'blur' },
-    { min: 1, max: 100, message: '標題長度應在 1 到 100 個字符之間', trigger: 'blur' },
+    { required: true, message: t('form.validation.required'), trigger: 'blur' },
+    {
+      min: 1,
+      max: 100,
+      message: t('form.validation.min_length', { min: 1 }) + ' - ' + t('form.validation.max_length', { max: 100 }),
+      trigger: 'blur',
+    },
   ],
-  desc: [
-    { required: true, message: '請輸入描述', trigger: 'blur' },
-    { min: 1, max: 500, message: '描述長度應在 1 到 500 個字符之間', trigger: 'blur' },
+  description: [
+    { required: true, message: t('form.validation.required'), trigger: 'blur' },
+    {
+      min: 1,
+      max: 500,
+      message: t('form.validation.min_length', { min: 1 }) + ' - ' + t('form.validation.max_length', { max: 500 }),
+      trigger: 'blur',
+    },
   ],
 })
 
-// Question management functions
 const addQuestion = (type: QType) => {
-  const base = { id: uuidv4(), type, label: defaultLabel(type), required: false } as Question
-  if (type === 'single' || type === 'multiple') base.options = ['選項 1', '選項 2']
-
+  const base = {
+    id: uuidv4(),
+    type,
+    title: defaultLabel(type),
+    required: true,
+    tip: QUESTION_DEFAULT_TIPS[type],
+  } as Question
+  if (type === 'single' || type === 'multiple')
+    base.options = [t('ui.option_default', { number: 1 }), t('ui.option_default', { number: 2 })]
   emit('update:questions', [...props.questions, base])
-
-  // 添加問題後滾動到頁面底部
-  nextTick(() => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    })
-  })
 }
 
 const defaultLabel = (type: QType) => {
-  switch (type) {
-    case 'number':
-      return '數字題'
-    case 'date':
-      return '日期題'
-    case 'time':
-      return '時間題'
-    case 'single':
-      return '單選題'
-    case 'multiple':
-      return '多選題'
-    default:
-      return '文字題'
-  }
+  return QUESTION_DEFAULT_TITLES[type]
 }
 
 const removeQuestion = (id: string) => {
@@ -260,7 +323,6 @@ const optionsWithId = (q: Question) =>
     id: `${q.id}-${idx}`,
   }))
 
-// 通用的問題更新函數
 const updateQuestion = (questionId: string, updateFn: (question: Question) => Question) => {
   const newQuestions = props.questions.map((q) => (q.id === questionId ? updateFn({ ...q }) : q))
   emit('update:questions', newQuestions)
@@ -270,7 +332,7 @@ const addOption = (q: Question) => {
   if (!q.id) return
   updateQuestion(q.id, (question) => ({
     ...question,
-    options: [...(question.options || []), `選項 ${(question.options?.length || 0) + 1}`],
+    options: [...(question.options || []), t('ui.option_default', { number: (question.options?.length || 0) + 1 })],
   }))
 }
 
@@ -299,20 +361,28 @@ const updateOptionText = (q: Question, index: number, value: string) => {
   })
 }
 
-// Submit function
+const getRangeText = (q: Question) => {
+  if (q.min !== undefined && q.max !== undefined) {
+    return `範圍：${q.min} ～ ${q.max}`
+  } else if (q.min !== undefined) {
+    return `最小：${q.min}`
+  } else if (q.max !== undefined) {
+    return `最大：${q.max}`
+  }
+  return ''
+}
+
 const submit = async () => {
   if (!formRef.value) return
 
-  // 檢查是否有問題標題為空的問題
-  const emptyLabelQuestions = props.questions.filter((q) => !q.label.trim())
+  const emptyLabelQuestions = props.questions.filter((q) => !q.title?.trim())
   if (emptyLabelQuestions.length > 0) {
-    ElMessage.error('所有問題都必須填寫標題')
+    ElMessage.error(t('messages.required_questions_error'))
     return
   }
 
-  // 檢查是否至少有一題
   if (props.questions.length === 0) {
-    ElMessage.error('至少需要新增一個問題')
+    ElMessage.error(t('messages.min_questions_error'))
     return
   }
 
@@ -322,18 +392,18 @@ const submit = async () => {
       emit('submit')
     }
   } catch (error) {
-    ElMessage.error('請檢查表單輸入')
+    ElMessage.error(t('messages.form_validation_error'))
   }
 }
 </script>
 
 <style>
 .ghost-class {
-  border-top: 1px solid rgb(26, 183, 194);
+  border-top: 1px solid rgb(6 182 212);
 }
 
 .option-ghost {
-  background-color: #f3f4f6;
-  border: 1px dashed #d1d5db;
+  background-color: rgb(243 244 246);
+  border: 1px dashed rgb(209 213 219);
 }
 </style>

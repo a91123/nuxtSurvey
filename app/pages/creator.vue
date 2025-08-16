@@ -1,25 +1,39 @@
 <template>
-  <FormEditor
-    v-model:title="formData.title"
-    v-model:desc="formData.desc"
-    v-model:status="formData.status"
-    v-model:questions="formData.questions"
-    :is-editing="false"
-    @submit="handleSubmit"
-  />
+  <div class="p-6 max-w-4xl mx-auto">
+    <Breadcrumb :items="breadcrumbs" />
+    <FormEditor
+      v-model:title="formData.title"
+      v-model:description="formData.description"
+      v-model:status="formData.status"
+      v-model:questions="formData.questions"
+      :is-editing="false"
+      @submit="handleSubmit"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ElMessage } from 'element-plus'
-import type { Question } from '~~/stores/surveys'
+import type { Question } from '~~/types/index'
 
-// 創建問卷頁面 - 使用 FormEditor 組件
+// 麵包屑
+const { t } = useI18n()
+const breadcrumbs = [
+  {
+    label: t('common.home'),
+    to: '/',
+    icon: 'fa-solid fa-home',
+  },
+  {
+    label: t('survey.create_new'),
+    icon: 'fa-solid fa-plus',
+  },
+]
 
-// 頁面層級的數據管理
 const formData = reactive({
   title: '',
-  desc: '',
-  status: '草稿' as '草稿' | '已發布',
+  description: '',
+  status: 'published' as 'draft' | 'published',
   questions: [] as Question[],
 })
 
@@ -27,26 +41,34 @@ const handleSubmit = async () => {
   try {
     const payload = {
       title: formData.title.trim(),
-      desc: formData.desc.trim(),
+      description: formData.description.trim(),
       status: formData.status,
       questions: formData.questions.map((q: Question) => ({
+        id: q.id,
         type: q.type,
-        label: q.label.trim(),
+        title: q.title?.trim() || '',
         required: q.required,
-        options: q.type === 'single' ? (q.options || []).filter(Boolean) : undefined,
+        options: q.type === 'single' || q.type === 'multiple' ? (q.options || []).filter(Boolean) : undefined,
+        min: q.type === 'number' ? q.min : undefined,
+        max: q.type === 'number' ? q.max : undefined,
+        tip: q.tip?.trim() || undefined,
       })),
     }
 
-    await $fetch('/api/surveys', {
+    console.log('🚀 Creating survey with payload:', payload)
+
+    // 使用 $fetch 調用 API
+    const response = await $fetch('/api/surveys', {
       method: 'POST',
       body: payload,
     })
 
-    ElMessage.success('已儲存')
+    console.log('✅ Survey created:', response)
+    ElMessage.success(t('messages.created_success'))
     await navigateTo('/')
   } catch (error) {
-    ElMessage.error('儲存失敗')
-    console.error(error)
+    console.error('❌ Error creating survey:', error)
+    ElMessage.error(t('messages.create_failed'))
   }
 }
 </script>

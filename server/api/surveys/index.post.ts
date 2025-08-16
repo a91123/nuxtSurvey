@@ -1,24 +1,41 @@
+import { createSurvey } from '~~/server/utils/storage'
+import type { Survey, Question } from '~~/types/index'
+import { v4 as uuidv4 } from 'uuid'
+import { createTimeStamp } from '~~/utils/date-fns'
+
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-
-  console.log('📡 API: 創建問卷請求', body.title)
-
   try {
-    // 使用 server store 創建問卷
-    const { getServerSurveyStore } = await import('../../../server/utils/surveyStore')
-    const serverStore = getServerSurveyStore()
-    const newSurvey = await serverStore.createSurvey(body)
+    const body = await readBody(event)
+    console.log('📡 API: POST /api/surveys', body)
+
+    const newSurvey: Survey = {
+      id: uuidv4(),
+      title: body.title,
+      description: body.description,
+      status: body.status || 'draft',
+      questions: body.questions.map((q: Question) => ({
+        id: uuidv4(),
+        type: q.type,
+        title: q.title,
+        required: q.required,
+        options: q.options
+      })),
+      createdAt: createTimeStamp(),
+      updatedAt: createTimeStamp()
+    }
+
+    await createSurvey(newSurvey, event)
 
     return {
       success: true,
-      message: '問卷創建成功',
       data: newSurvey
     }
   } catch (error: any) {
-    console.error('📡 API: 創建問卷失敗', error.message)
+    console.error('❌ Error creating survey:', error)
+    if (error.statusCode) throw error
     throw createError({
-      statusCode: 400,
-      statusMessage: error.message
+      statusCode: 500,
+      statusMessage: 'Failed to create survey'
     })
   }
 })

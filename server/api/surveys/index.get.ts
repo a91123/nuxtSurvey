@@ -1,72 +1,92 @@
+import { getAllSurveys, getSurveyResponses } from '~~/server/utils/storage'
+
 export default defineEventHandler(async (event) => {
-  const {
-    title = '',
-    status = '',
-    sort = 'recent', 
-    page = 1,
-    pageSize = 9
-  } = getQuery(event) as Record<string, string>
-
-  console.log('📡 API: 獲取問卷列表請求')
-
-  // 使用 server store 獲取數據
-  const { getServerSurveyStore } = await import('../../../server/utils/surveyStore')
-  const serverStore = getServerSurveyStore()
-  const allSurveys = await serverStore.getAllSurveys()
-
-  // 轉換格式以兼容原有前端
-  const all = allSurveys.map((survey: any) => ({
-    id: parseInt(survey.id),
-    title: survey.title,
-    desc: survey.desc,
-    status: survey.status === '已發布' ? 'published' : 'draft',
-    questions: survey.questions.length,
-    responses: Math.floor(Math.random() * 150), // 模擬回應數
-    updatedAt: survey.updatedAt.split('T')[0] // 只保留日期部分
-  }))
-
-  const kw = String(title || '').trim().toLowerCase()
-  let list = kw
-    ? all.filter((it: any) => it.title.toLowerCase().includes(kw) || (it.desc || '').toLowerCase().includes(kw))
-    : all.slice()
-
-  // 狀態篩選
-  if (status && status !== 'all' && status !== '') list = list.filter((it: any) => it.status === status)
-
-  // 排序
-  switch (sort) {
-    case 'responses':
-      list.sort((a: any, b: any) => b.responses - a.responses)
-      break
-    case 'questions':
-      list.sort((a: any, b: any) => b.questions - a.questions)
-      break
-    case 'title-asc':
-      list.sort((a: any, b: any) => a.title.localeCompare(b.title, 'zh-Hant'))
-      break
-    case 'title-desc':
-      list.sort((a: any, b: any) => b.title.localeCompare(a.title, 'zh-Hant'))
-      break
-    case 'recent':
-    default:
-      list.sort((a: any, b: any) => +new Date(b.updatedAt) - +new Date(a.updatedAt))
-  }
-
-  const p = Math.max(1, parseInt(String(page), 10) || 1)
-  const ps = Math.min(50, Math.max(1, parseInt(String(pageSize), 10) || 9))
-  const total = list.length
-  const pageCount = Math.max(1, Math.ceil(total / ps))
-  const start = (p - 1) * ps
-  const end = start + ps
-  const items = list.slice(start, end)
-
-  return {
-    items,
-    total,
-    page: p,
-    pageSize: ps,
-    pageCount,
-    hasPrev: p > 1,
-    hasNext: p < pageCount
+  try {
+    console.log('📡 API: GET /api/surveys')
+    
+    // 獲取查詢參數
+    const query = getQuery(event)
+    const {
+      search = '',
+      status = 'all',
+      sort = 'recent',
+      page = '1',
+      pageSize = '6'
+    } = query
+    
+    const surveys = await getAllSurveys(event)
+    console.log(`📊 Found ${surveys.length} surveys in storage`)
+    
+    let result = await Promise.all(surveys.map(async (s: any) => ({
+      id: s.id,
+      title: s.title,
+      description: s.description,
+      status: s.status,
+      questions: s.questions.length,
+      responses: (await getSurveyResponses(s.id, event)).length,
+      updatedAt: s.updatedAt,
+      createdAt: s.createdAt
+    })))
+    
+    // 搜尋過濾
+    if (search && typeof search === 'string') {
+      const searchLower = search.toLowerCase()
+      result = result.filter(survey => 
+        survey.title.toLowerCase().includes(searchLower) || 
+        survey.description.toLowerCase().includes(searchLower)
+      )
+    }
+    
+    // 狀態過濾
+    if (status && status !== 'all') {
+      result = result.filter(survey => survey.status === status)
+    }
+    
+    // 排序
+    switch (sort) {
+      case 'responses':
+        result.sort((a, b) => b.responses - a.responses)
+        break
+      case 'questions':
+        result.sort((a, b) => b.questions - a.questions)
+        break
+      case 'title-asc':
+        result.sort((a, b) => a.title.localeCompare(b.title, 'zh-Hant'))
+        break
+      case 'title-desc':
+        result.sort((a, b) => b.title.localeCompare(a.title, 'zh-Hant'))
+        break
+      case 'recent':
+      default:
+        result.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+    }
+    
+    // 分頁
+    const total = result.length
+    const pageNum = parseInt(page as string, 10)
+    const pageSizeNum = parseInt(pageSize as string, 10)
+    const startIndex = (pageNum - 1) * pageSizeNum
+    const endIndex = startIndex + pageSizeNum
+    
+    result = result.slice(startIndex, endIndex)
+    
+    console.log(`📦 Returning ${result.length} of ${total} surveys to frontend`)
+    
+    return {
+      success: true,
+      data: result,
+      pagination: {
+        page: pageNum,
+        pageSize: pageSizeNum,
+        total,
+        totalPages: Math.ceil(total / pageSizeNum)
+      }
+    }
+  } catch (error: any) {
+    console.error('❌ Error fetching surveys:', error)
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Failed to fetch surveys'
+    })
   }
 })
