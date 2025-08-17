@@ -17,7 +17,7 @@
     "sort": "排序"
   },
   "header": {
-    "title": "我的問卷系統",
+    "title": "SurveyFlow",
     "survey_management": "問卷管理",
     "create_survey": "建立問卷",
     "statistics": "統計分析",

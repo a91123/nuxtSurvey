@@ -16,6 +16,16 @@
 import { ElMessage } from 'element-plus'
 import type { Question } from '~~/types/index'
 
+// SEO 設定
+useSeoMeta({
+  title: '建立問卷 - SurveyFlow',
+  description:
+    '使用 SurveyFlow 拖拽式編輯器輕鬆建立專業問卷。支援多種題型：單選、多選、文字輸入、日期時間等。完全免費使用。',
+  keywords: 'SurveyFlow,建立問卷,問卷設計,線上表單,問卷編輯器,拖拽式問卷',
+  ogTitle: '建立問卷 - SurveyFlow',
+  ogDescription: '使用 SurveyFlow 拖拽式編輯器輕鬆建立專業問卷，支援多種題型設計。',
+})
+
 // 麵包屑
 const { t } = useI18n()
 const breadcrumbs = [
