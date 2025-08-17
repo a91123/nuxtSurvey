@@ -62,7 +62,7 @@
         handle=".drag-handle"
         :animation="300"
         :scroll-sensitivity="100"
-        :scroll-speed="50"
+        :scroll-speed="20"
         ghost-class="ghost-class"
         class="space-y-3"
       >
@@ -402,11 +402,7 @@ const submit = async () => {
 
 <style>
 .ghost-class {
-  border-top: 1px solid rgb(6 182 212);
-}
-
-.option-ghost {
-  background-color: rgb(243 244 246);
-  border: 1px dashed rgb(209 213 219);
+  border: 1px dashed rgb(6 182 212);
+  border-radius: 8px;
 }
 </style>
