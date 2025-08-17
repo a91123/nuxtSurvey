@@ -58,8 +58,11 @@
       <draggable
         v-model="questions"
         item-key="id"
+        :force-fallback="true"
         handle=".drag-handle"
         :animation="300"
+        :scroll-sensitivity="100"
+        :scroll-speed="50"
         ghost-class="ghost-class"
         class="space-y-3"
       >
