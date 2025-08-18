@@ -167,3 +167,10 @@ export interface BrowserStat {
   count: number
   percentage: string
 }
+
+// 全域類型聲明
+declare global {
+  interface Window {
+    __ECHARTS_READY__?: boolean
+  }
+}

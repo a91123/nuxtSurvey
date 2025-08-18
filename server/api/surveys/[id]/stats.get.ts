@@ -129,22 +129,6 @@ function calculateSurveyStats(survey: Survey, responses: SurveyResponse[]) {
           }
         }
         break
-
-      case 'text':
-        const totalWords = answers.reduce((sum, answer) => {
-          // 簡單的詞數計算：按空格分割
-          const words = String(answer).trim().split(/\s+/).filter(word => word.length > 0)
-          return sum + words.length
-        }, 0)
-        
-        stats.textStats = {
-          totalAnswers: answers.length,
-          averageLength: answers.length > 0 
-            ? (answers.reduce((sum, answer) => sum + String(answer).length, 0) / answers.length).toFixed(1)
-            : '0',
-          totalWords: totalWords // 添加總詞數
-        }
-        break
     }
 
     return stats

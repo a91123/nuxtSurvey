@@ -205,10 +205,6 @@
       "average": "平均值",
       "total": "總和"
     },
-    "text_stats": {
-      "average_length": "平均字數",
-      "total_words": "總詞數"
-    },
     "date_stats": {
       "earliest": "最早日期",
       "latest": "最晚日期"

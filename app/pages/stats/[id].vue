@@ -140,20 +140,34 @@
             </div>
 
             <!-- 選項統計 (單選/多選) -->
-            <div v-if="questionStat.optionStats && questionStat.optionStats.length > 0" class="space-y-4">
-              <div v-for="option in questionStat.optionStats" :key="option.option" class="bg-gray-50 rounded-lg p-4">
-                <div class="flex justify-between items-center mb-3">
-                  <span class="text-sm font-medium text-gray-800">{{ option.option }}</span>
-                  <div class="flex items-center gap-2">
-                    <span class="text-sm text-gray-600">{{ $t('stats.option_count', { count: option.count }) }}</span>
-                    <span class="text-sm font-semibold text-blue-600">{{ option.percentage }}%</span>
-                  </div>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-3">
+            <div v-if="questionStat.optionStats && questionStat.optionStats.length > 0" class="space-y-6">
+              <!-- 圓餅圖展示 -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 圓餅圖 - 使用封裝組件 -->
+                <ChartPie :data="questionStat.optionStats" title="選項分布圖" />
+
+                <!-- 詳細數據 -->
+                <div class="space-y-3">
+                  <h4 class="text-lg font-semibold text-gray-800 mb-4">詳細統計</h4>
                   <div
-                    class="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-300"
-                    :style="{ width: option.percentage + '%' }"
-                  ></div>
+                    v-for="option in questionStat.optionStats"
+                    :key="option.option"
+                    class="bg-white rounded-lg p-4 shadow-sm border"
+                  >
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="text-sm font-medium text-gray-800">{{ option.option }}</span>
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600">{{ option.count }} 人</span>
+                        <span class="text-sm font-semibold text-blue-600">{{ option.percentage }}%</span>
+                      </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                      <div
+                        class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500"
+                        :style="{ width: option.percentage + '%' }"
+                      ></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -175,18 +189,6 @@
               <div class="text-center p-3 bg-gray-50 rounded">
                 <p class="text-sm text-gray-500">{{ $t('stats.number_stats.total') }}</p>
                 <p class="text-lg font-semibold">{{ questionStat.numberStats.total }}</p>
-              </div>
-            </div>
-
-            <!-- 文字統計 -->
-            <div v-if="questionStat.textStats" class="grid grid-cols-2 gap-4">
-              <div class="text-center p-3 bg-gray-50 rounded">
-                <p class="text-sm text-gray-500">{{ $t('stats.text_stats.average_length') }}</p>
-                <p class="text-lg font-semibold">{{ questionStat.textStats.averageLength }}</p>
-              </div>
-              <div class="text-center p-3 bg-gray-50 rounded">
-                <p class="text-sm text-gray-500">{{ $t('stats.text_stats.total_words') }}</p>
-                <p class="text-lg font-semibold">{{ questionStat.textStats.totalWords }}</p>
               </div>
             </div>
 
@@ -218,7 +220,7 @@
                   <span class="text-sm font-medium text-gray-800">{{ browserStat.browser }}</span>
                   <div class="flex items-center gap-2">
                     <span class="text-sm text-gray-600">{{ browserStat.count }} {{ $t('common.people', '人') }}</span>
-                    <span class="text-sm font-semibold" :class="getBrowserColor(browserStat.browser).text"
+                    <span class="text-sm font-semibold" :class="getBrowserColor(browserStat.browser)?.text"
                       >{{ browserStat.percentage }}%</span
                     >
                   </div>
@@ -226,7 +228,7 @@
                 <div class="w-full bg-gray-200 rounded-full h-3">
                   <div
                     class="h-3 rounded-full transition-all duration-300"
-                    :class="getBrowserColor(browserStat.browser).gradient"
+                    :class="getBrowserColor(browserStat.browser)?.gradient"
                     :style="{ width: browserStat.percentage + '%' }"
                   ></div>
                 </div>

@@ -205,10 +205,6 @@
       "average": "Average",
       "total": "Total"
     },
-    "text_stats": {
-      "average_length": "Avg Length",
-      "total_words": "Total Words"
-    },
     "date_stats": {
       "earliest": "Earliest",
       "latest": "Latest"
