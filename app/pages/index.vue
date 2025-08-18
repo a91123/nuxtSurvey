@@ -118,7 +118,7 @@ useSeoMeta({
   keywords: 'SurveyFlow,問卷調查,線上問卷,市場調查,客戶回饋,數據收集,統計分析,免費問卷工具',
   ogTitle: 'SurveyFlow - 專業線上問卷調查平台',
   ogDescription: 'SurveyFlow 免費的線上問卷調查系統，輕鬆建立專業問卷，收集和分析數據。',
-  ogUrl: 'https://nuxt-survey-git-main-toms-projects-e541efe0.vercel.app',
+  ogUrl: 'https://nuxt-survey.vercel.app',
 })
 
 const { t } = useI18n()

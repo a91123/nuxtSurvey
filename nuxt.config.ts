@@ -46,9 +46,9 @@ export default defineNuxtConfig({
         { property: 'og:type', content: 'website' },
         { property: 'og:title', content: 'SurveyFlow - 現代化線上問卷調查平台' },
         { property: 'og:description', content: 'SurveyFlow - 專業的線上問卷調查系統，輕鬆建立、分享和分析問卷數據' },
-        { property: 'og:url', content: 'https://nuxt-survey-git-main-toms-projects-e541efe0.vercel.app' },
+        { property: 'og:url', content: 'https://nuxt-survey.vercel.app' },
         { property: 'og:site_name', content: 'SurveyFlow' },
-        { property: 'og:image', content: 'https://nuxt-survey-git-main-toms-projects-e541efe0.vercel.app/og-image.png' },
+        { property: 'og:image', content: 'https://nuxt-survey.vercel.app/og-image.png' },
         
         // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
@@ -57,7 +57,7 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'canonical', href: 'https://nuxt-survey-git-main-toms-projects-e541efe0.vercel.app' }
+        { rel: 'canonical', href: 'https://nuxt-survey.vercel.app' }
       ],
       script: [
         {
@@ -67,7 +67,7 @@ export default defineNuxtConfig({
             '@type': 'WebApplication',
             name: 'SurveyFlow',
             description: 'SurveyFlow - 現代化的線上問卷調查平台，提供問卷建立、數據收集和統計分析功能',
-            url: 'https://nuxt-survey-git-main-toms-projects-e541efe0.vercel.app',
+            url: 'https://nuxt-survey.vercel.app',
             operatingSystem: 'Web Browser',
             featureList: [
               '拖拽式問卷建立',

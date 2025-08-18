@@ -18,7 +18,7 @@ Allow: /$
 Allow: /creator
 
 # 指定 sitemap 位置
-Sitemap: https://nuxt-survey-git-main-toms-projects-e541efe0.vercel.app/sitemap.xml
+Sitemap: https://nuxt-survey.vercel.app/sitemap.xml
 
 # 搜索引擎爬取頻率建議
 # Google
