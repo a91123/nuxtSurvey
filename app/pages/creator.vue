@@ -75,7 +75,7 @@ const handleSubmit = async () => {
 
     console.log('✅ Survey created:', response)
     ElMessage.success(t('messages.created_success'))
-    await navigateTo('/')
+    await navigateTo('/dashboard')
   } catch (error) {
     console.error('❌ Error creating survey:', error)
     ElMessage.error(t('messages.create_failed'))

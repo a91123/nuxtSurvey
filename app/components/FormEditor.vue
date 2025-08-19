@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold">{{ isEditing ? $t('editor.title') : $t('editor.create_title') }}</h1>
       <div class="flex gap-2">
-        <el-button @click="navigateTo('/')">{{ $t('navigation.back_to_list') }}</el-button>
+        <el-button @click="navigateTo('/dashboard')">{{ $t('navigation.back_to_list') }}</el-button>
         <el-button type="primary" @click="submit">{{ $t('common.save') }}</el-button>
       </div>
     </div>

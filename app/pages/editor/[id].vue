@@ -67,7 +67,7 @@ watchEffect(() => {
   } else {
     console.error('載入問卷失敗:', data)
     ElMessage.error(t('messages.loading_error'))
-    navigateTo('/')
+    navigateTo('/dashboard')
   }
 })
 
@@ -93,7 +93,7 @@ const handleSubmit = async () => {
       body: payload,
     })
     ElMessage.success(t('messages.update_success'))
-    await navigateTo('/')
+    await navigateTo('/dashboard')
   } catch (error) {
     ElMessage.error(t('messages.update_failed'))
     console.error(error)
