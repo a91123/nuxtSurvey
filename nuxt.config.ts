@@ -41,7 +41,8 @@ export default defineNuxtConfig({
         { name: 'keywords', content: '問卷調查,線上問卷,表單建立,數據分析,調查工具' },
         { name: 'author', content: 'tom' },
         { name: 'robots', content: 'index, follow' },
-        
+        // Google Search Console 驗證
+        { name: 'google-site-verification', content: 'bqttwLt2ljAcqqsx060G-MqF_LMz4oiUAcKKxD6EDj0' },
         // Open Graph
         { property: 'og:type', content: 'website' },
         { property: 'og:title', content: 'SurveyFlow - 現代化線上問卷調查平台' },
