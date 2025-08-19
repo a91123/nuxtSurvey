@@ -1,7 +1,19 @@
 <template>
   <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-6" :aria-label="$t('breadcrumb.aria_label')">
-    <ol class="flex items-center space-x-2" itemscope itemtype="https://schema.org/BreadcrumbList">
-      <li v-for="(item, index) in breadcrumbs" :key="index" class="flex items-center">
+    <ol
+      v-if="showBreadcrumbs"
+      class="flex items-center space-x-2"
+      itemscope
+      itemtype="https://schema.org/BreadcrumbList"
+    >
+      <li
+        v-for="(item, index) in breadcrumbs"
+        :key="index"
+        class="flex items-center"
+        itemprop="itemListElement"
+        itemscope
+        itemtype="https://schema.org/ListItem"
+      >
         <!-- 分隔符 -->
         <i v-if="index > 0" class="fa-solid fa-chevron-right text-gray-400 text-xs mx-2" aria-hidden="true"></i>
 
@@ -14,6 +26,7 @@
         >
           <i v-if="item.icon" :class="item.icon" class="mr-1.5"></i>
           {{ item.label }}
+          <meta itemprop="item" :content="getFullUrl(item.to || $route.path)" />
         </span>
 
         <!-- 可點擊的項目 -->
@@ -33,6 +46,12 @@
         <meta itemprop="position" :content="(index + 1).toString()" />
       </li>
     </ol>
+
+    <!-- 當沒有麵包屑時的簡單顯示 -->
+    <div v-else class="flex items-center">
+      <i class="fa-solid fa-home text-gray-400 mr-1.5"></i>
+      <span class="font-medium text-gray-800">{{ $t('common.home') }}</span>
+    </div>
   </nav>
 </template>
 
@@ -48,6 +67,12 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const route = useRoute()
+
+// 判斷是否顯示完整的麵包屑（有多個層級時）
+const showBreadcrumbs = computed(() => {
+  return props.items.length > 0
+})
 
 // 總是包含首頁的完整麵包屑
 const breadcrumbs = computed(() => {
@@ -58,11 +83,6 @@ const breadcrumbs = computed(() => {
     icon: 'fa-solid fa-home',
   }
 
-  // 如果當前就在首頁，只顯示首頁
-  if (props.items.length === 0 || (props.items.length === 1 && props.items[0]?.to === '/')) {
-    return [{ ...homeBreadcrumb, to: undefined }] // 移除 to 屬性使其不可點擊
-  }
-
   // 如果第一個項目不是首頁，則加上首頁
   if (props.items.length > 0 && props.items[0]?.to !== '/') {
     return [homeBreadcrumb, ...props.items]
@@ -70,6 +90,13 @@ const breadcrumbs = computed(() => {
 
   return props.items
 })
+
+// 生成完整 URL
+const getFullUrl = (path: string) => {
+  const config = useRuntimeConfig()
+  const baseUrl = 'https://nuxt-survey.vercel.app'
+  return `${baseUrl}${path}`
+}
 </script>
 
 <style scoped>
