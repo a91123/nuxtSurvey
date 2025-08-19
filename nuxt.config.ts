@@ -9,6 +9,10 @@ export default defineNuxtConfig({
     '@element-plus/nuxt',
     '@nuxtjs/sitemap'
   ],
+  
+  elementPlus: {
+    importStyle: 'scss'
+  },
   // i18n 設定
   i18n: {
     locales: [
@@ -28,7 +32,6 @@ export default defineNuxtConfig({
     }
   },
   css: [
-    'element-plus/dist/index.css',
     '@fortawesome/fontawesome-free/css/all.min.css',
     '~/assets/css/custom.css'
   ],
