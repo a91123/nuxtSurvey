@@ -35,7 +35,12 @@ export default defineNuxtConfig({
   // 設定 headers
   nitro: {
     routeRules: {
-      '/sitemap.xml': { headers: { 'Content-Type': 'application/xml; charset=utf-8' } },
+      '/sitemap.xml': { 
+        headers: { 
+          'Content-Type': 'application/xml; charset=utf-8',
+          'X-Robots-Tag': 'noindex'
+        }
+      },
       '/robots.txt': { headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
     },
     externals: {
@@ -53,9 +58,7 @@ export default defineNuxtConfig({
   
   // Sitemap 詳細配置
   sitemap: {
-    sources: [
-      '/api/__sitemap__/urls'
-    ]
+    exclude: ['/editor/**', '/stats/**', '/survey/**', '/api/**']
   },
   // SEO 和 Meta 標籤設定
   app: {
