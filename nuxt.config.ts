@@ -29,6 +29,13 @@ export default defineNuxtConfig({
     '@fortawesome/fontawesome-free/css/all.min.css',
     '~/assets/css/custom.css'
   ],
+  // 設定 headers
+  nitro: {
+    routeRules: {
+      '/sitemap.xml': { headers: { 'Content-Type': 'application/xml; charset=utf-8' } },
+      '/robots.txt': { headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
+    }
+  },
   // SEO 和 Meta 標籤設定
   app: {
     head: {
