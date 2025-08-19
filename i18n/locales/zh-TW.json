@@ -14,7 +14,9 @@
     "create": "新增",
     "search": "搜尋",
     "filter": "篩選",
-    "sort": "排序"
+    "sort": "排序",
+    "back": "返回",
+    "people": "人"
   },
   "header": {
     "title": "SurveyFlow",
@@ -208,7 +210,12 @@
     "date_stats": {
       "earliest": "最早日期",
       "latest": "最晚日期"
-    }
+    },
+    "export_data": "匯出數據",
+    "export_csv": "匯出 CSV 檔案",
+    "export_excel": "匯出 Excel 檔案",
+    "export_success": "{format} 檔案已成功下載",
+    "export_failed": "匯出失敗，請稍後再試"
   },
   "breadcrumb": {
     "aria_label": "麵包屑導航"

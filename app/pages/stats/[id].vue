@@ -2,19 +2,21 @@
   <div class="min-h-screen bg-gray-50">
     <!-- 導航欄 -->
     <nav class="bg-white shadow-sm border-b">
-      <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-chart-bar text-blue-600 text-xl"></i>
-            <span class="font-semibold text-gray-800">{{ $t('stats.page_title') }}</span>
+          <div class="flex items-center gap-2 sm:gap-3">
+            <i class="fa-solid fa-chart-bar text-blue-600 text-lg sm:text-xl"></i>
+            <span class="font-semibold text-gray-800 text-sm sm:text-base">{{ $t('stats.page_title') }}</span>
           </div>
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 sm:gap-3">
             <!-- 語言切換 -->
-            <LanguageSwitcher />
+            <LanguageSwitcherCompact class="sm:hidden" />
+            <LanguageSwitcher class="hidden sm:block" />
             <!-- 返回按鈕 -->
-            <el-button plain @click="navigateTo('/')" class="text-gray-600 hover:text-blue-600">
-              <i class="fa-solid fa-arrow-left mr-2"></i>
-              {{ $t('messages.return_list') }}
+            <el-button plain @click="navigateTo('/')" class="text-gray-600 hover:text-blue-600" size="small">
+              <i class="fa-solid fa-arrow-left mr-1 sm:mr-2"></i>
+              <span class="hidden sm:inline">{{ $t('messages.return_list') }}</span>
+              <span class="sm:hidden">{{ $t('common.back') }}</span>
             </el-button>
           </div>
         </div>
@@ -41,73 +43,100 @@
     </div>
 
     <!-- 統計內容 -->
-    <main v-else-if="statsData" class="py-8">
-      <div class="max-w-7xl mx-auto px-6">
+    <main v-else-if="statsData" class="py-4 sm:py-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6">
         <!-- 麵包屑導航 -->
         <Breadcrumb :items="breadcrumbs" />
 
         <!-- 問卷基本信息 -->
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
-          <h1 class="text-2xl font-bold text-gray-800 mb-2">{{ statsData.surveyInfo.title }}</h1>
-          <p class="text-gray-600 mb-4">{{ statsData.surveyInfo.description }}</p>
-          <div class="flex items-center gap-6 text-sm text-gray-500">
-            <span
-              >{{ $t('stats.survey_status') }}
-              <span :class="statsData.surveyInfo.status === 'published' ? 'text-green-600' : 'text-yellow-600'">
-                {{ $t(`survey.${statsData.surveyInfo.status}`) }}
-              </span>
-            </span>
-            <span>{{ $t('stats.created_time', { time: formatDate(statsData.surveyInfo.createdAt) }) }}</span>
-            <span>{{ $t('stats.updated_time', { time: formatDate(statsData.surveyInfo.updatedAt) }) }}</span>
+        <div class="bg-white rounded-lg shadow p-4 sm:p-6 mb-6">
+          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-4">
+            <div class="flex-1">
+              <h1 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">{{ statsData.surveyInfo.title }}</h1>
+              <p class="text-gray-600 mb-4">{{ statsData.surveyInfo.description }}</p>
+              <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-sm text-gray-500">
+                <span
+                  >{{ $t('stats.survey_status') }}
+                  <span :class="statsData.surveyInfo.status === 'published' ? 'text-green-600' : 'text-yellow-600'">
+                    {{ $t(`survey.${statsData.surveyInfo.status}`) }}
+                  </span>
+                </span>
+                <span>{{ $t('stats.created_time', { time: formatDate(statsData.surveyInfo.createdAt) }) }}</span>
+                <span>{{ $t('stats.updated_time', { time: formatDate(statsData.surveyInfo.updatedAt) }) }}</span>
+              </div>
+            </div>
+
+            <!-- 匯出按鈕區域 -->
+            <div class="flex flex-col sm:flex-row gap-2 shrink-0">
+              <el-dropdown @command="handleExport" placement="bottom-end">
+                <el-button type="primary" :loading="exportLoading">
+                  <i class="fa-solid fa-download mr-2"></i>
+                  {{ $t('stats.export_data') }}
+                  <i class="fa-solid fa-chevron-down ml-2"></i>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="csv">
+                      <i class="fa-solid fa-file-csv mr-2 text-green-600"></i>
+                      {{ $t('stats.export_csv') }}
+                    </el-dropdown-item>
+                    <el-dropdown-item command="excel">
+                      <i class="fa-solid fa-file-excel mr-2 text-emerald-600"></i>
+                      {{ $t('stats.export_excel') }}
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </div>
         </div>
 
         <!-- 總覽統計 -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div class="bg-white rounded-lg shadow p-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div class="bg-white rounded-lg shadow p-4 sm:p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
-                <i class="fa-solid fa-users text-blue-500 text-2xl"></i>
+                <i class="fa-solid fa-users text-blue-500 text-xl sm:text-2xl"></i>
               </div>
-              <div class="ml-4">
-                <p class="text-sm font-medium text-gray-500">{{ $t('stats.total_responses_label') }}</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ statsData.overview.totalResponses }}</p>
+              <div class="ml-3 sm:ml-4">
+                <p class="text-xs sm:text-sm font-medium text-gray-500">{{ $t('stats.total_responses_label') }}</p>
+                <p class="text-xl sm:text-2xl font-semibold text-gray-900">{{ statsData.overview.totalResponses }}</p>
               </div>
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow p-6">
+          <div class="bg-white rounded-lg shadow p-4 sm:p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
-                <i class="fa-solid fa-question-circle text-green-500 text-2xl"></i>
+                <i class="fa-solid fa-question-circle text-green-500 text-xl sm:text-2xl"></i>
               </div>
-              <div class="ml-4">
-                <p class="text-sm font-medium text-gray-500">{{ $t('stats.total_questions_label') }}</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ statsData.overview.questionsCount }}</p>
+              <div class="ml-3 sm:ml-4">
+                <p class="text-xs sm:text-sm font-medium text-gray-500">{{ $t('stats.total_questions_label') }}</p>
+                <p class="text-xl sm:text-2xl font-semibold text-gray-900">{{ statsData.overview.questionsCount }}</p>
               </div>
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow p-6">
+          <div class="bg-white rounded-lg shadow p-4 sm:p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
-                <i class="fa-solid fa-percentage text-purple-500 text-2xl"></i>
+                <i class="fa-solid fa-percentage text-purple-500 text-xl sm:text-2xl"></i>
               </div>
-              <div class="ml-4">
-                <p class="text-sm font-medium text-gray-500">{{ $t('stats.response_rate_label') }}</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ statsData.overview.responseRate }}%</p>
+              <div class="ml-3 sm:ml-4">
+                <p class="text-xs sm:text-sm font-medium text-gray-500">{{ $t('stats.response_rate_label') }}</p>
+                <p class="text-xl sm:text-2xl font-semibold text-gray-900">{{ statsData.overview.responseRate }}%</p>
               </div>
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow p-6">
+          <div class="bg-white rounded-lg shadow p-4 sm:p-6">
             <div class="flex items-center">
               <div class="flex-shrink-0">
-                <i class="fa-solid fa-clock text-orange-500 text-2xl"></i>
+                <i class="fa-solid fa-clock text-orange-500 text-xl sm:text-2xl"></i>
               </div>
-              <div class="ml-4">
-                <p class="text-sm font-medium text-gray-500">{{ $t('stats.last_response_label') }}</p>
-                <p class="text-2xl font-semibold text-gray-900">
+              <div class="ml-3 sm:ml-4">
+                <p class="text-xs sm:text-sm font-medium text-gray-500">{{ $t('stats.last_response_label') }}</p>
+                <p class="text-sm sm:text-xl lg:text-2xl font-semibold text-gray-900">
                   {{
                     statsData.overview.lastResponseAt
                       ? formatDate(statsData.overview.lastResponseAt)
@@ -283,6 +312,7 @@
 
 <script setup lang="ts">
 import { QUESTION_TYPE_LABELS, detectBrowser, getBrowserColor } from '~~/utils/map'
+import { ElMessage } from 'element-plus'
 
 definePageMeta({
   layout: false,
@@ -295,6 +325,71 @@ const route = useRoute()
 const surveyId = route.params.id as string
 
 const { data: statsResponse, pending, error, refresh } = await useFetch(`/api/surveys/${surveyId}/stats`)
+
+// 匯出功能
+const exportLoading = ref(false)
+
+const handleExport = async (format: 'csv' | 'excel') => {
+  if (!statsData.value) {
+    ElMessage.error('無法獲取問卷數據')
+    return
+  }
+
+  try {
+    exportLoading.value = true
+    console.log(`📤 開始匯出 ${format.toUpperCase()} 格式`)
+
+    const url = `/api/surveys/${surveyId}/export?format=${format}`
+    console.log(`📡 請求 URL: ${url}`)
+
+    const response = await fetch(url)
+    console.log(`📡 響應狀態: ${response.status}`)
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('API 錯誤響應:', errorText)
+      throw new Error(`匯出失敗 (${response.status}): ${errorText}`)
+    }
+
+    // 獲取檔案名稱
+    const contentDisposition = response.headers.get('Content-Disposition')
+    console.log('Content-Disposition:', contentDisposition)
+
+    // 清理檔案名稱
+    const cleanTitle = statsData.value.surveyInfo.title.replace(/[^\w\s-]/g, '').replace(/\s+/g, '_')
+    let filename = `${cleanTitle}_responses.${format}`
+
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename="(.+)"/)
+      if (filenameMatch && filenameMatch[1]) {
+        filename = filenameMatch[1]
+      }
+    }
+
+    console.log(`📁 檔案名稱: ${filename}`)
+
+    // 下載檔案
+    const blob = await response.blob()
+    console.log(`📦 檔案大小: ${blob.size} bytes`)
+
+    const downloadUrl = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = downloadUrl
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(downloadUrl)
+
+    ElMessage.success(t('stats.export_success', { format: format.toUpperCase() }))
+    console.log(`✅ 匯出成功: ${filename}`)
+  } catch (error: any) {
+    console.error('❌ 匯出失敗:', error)
+    ElMessage.error(`${t('stats.export_failed')}: ${error.message || error}`)
+  } finally {
+    exportLoading.value = false
+  }
+}
 
 const statsData = computed(() => {
   return statsResponse.value?.success ? statsResponse.value.data : null

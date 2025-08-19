@@ -35,7 +35,11 @@ export default defineNuxtConfig({
     routeRules: {
       '/sitemap.xml': { headers: { 'Content-Type': 'application/xml; charset=utf-8' } },
       '/robots.txt': { headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
-    }
+    },
+    externals: {
+      inline: ['xlsx']
+    },
+    moduleSideEffects: ['xlsx']
   },
   // Sitemap 設定
   site: {

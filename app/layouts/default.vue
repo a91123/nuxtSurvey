@@ -16,7 +16,7 @@
         </div>
       </div>
     </header>
-    <main class="flex-1 min-h-0 pt-16 pb-12 px-6">
+    <main class="flex-1 pt-16 pb-12 min-h-screen">
       <slot />
     </main>
     <footer class="fixed bottom-0 inset-x-0 z-50 h-12 bg-white shadow">

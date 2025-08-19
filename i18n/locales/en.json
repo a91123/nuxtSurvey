@@ -14,7 +14,9 @@
     "create": "Create",
     "search": "Search",
     "filter": "Filter",
-    "sort": "Sort"
+    "sort": "Sort",
+    "back": "Back",
+    "people": "people"
   },
   "header": {
     "title": "SurveyFlow",
@@ -208,7 +210,12 @@
     "date_stats": {
       "earliest": "Earliest",
       "latest": "Latest"
-    }
+    },
+    "export_data": "Export Data",
+    "export_csv": "Export CSV File",
+    "export_excel": "Export Excel File",
+    "export_success": "{format} file downloaded successfully",
+    "export_failed": "Export failed, please try again"
   },
   "breadcrumb": {
     "aria_label": "Breadcrumb Navigation"
