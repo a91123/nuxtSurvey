@@ -216,16 +216,46 @@
 </template>
 
 <script setup lang="ts">
-// SEO 設定
+// SEO 設定 - 使用 useSeoMeta 是 Nuxt 3 的最佳實踐
 useSeoMeta({
   title: 'SurveyFlow - 專業線上問卷調查平台',
   description:
     'SurveyFlow 是專業的線上問卷調查系統，支援拖拽式問卷建立、多種題型、即時數據統計。適合市場調查、客戶回饋、學術研究等各種場景。',
-  keywords: 'SurveyFlow,問卷調查,線上問卷,市場調查,客戶回饋,數據收集,統計分析,免費問卷工具',
+  keywords:
+    'SurveyFlow,問卷調查,線上問卷,市場調查,客戶回饋,數據收集,統計分析,免費問卷工具,表單建立,survey,questionnaire',
   ogTitle: 'SurveyFlow - 專業線上問卷調查平台',
   ogDescription: 'SurveyFlow 是專業的線上問卷調查系統，輕鬆建立專業問卷，收集和分析數據。',
+  ogImage: 'https://nuxt-survey.vercel.app/og-image.svg',
   ogUrl: 'https://nuxt-survey.vercel.app',
-  ogImage: 'https://nuxt-survey.vercel.app/og-image.png',
+  twitterTitle: 'SurveyFlow - 專業線上問卷調查平台',
+  twitterDescription: 'SurveyFlow 是專業的線上問卷調查系統，輕鬆建立專業問卷，收集和分析數據。',
+  twitterImage: 'https://nuxt-survey.vercel.app/og-image.svg',
+  twitterCard: 'summary_large_image',
+})
+
+// 結構化數據 - 只在首頁需要
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'SurveyFlow',
+        description: 'SurveyFlow 是專業的線上問卷調查系統',
+        url: 'https://nuxt-survey.vercel.app',
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web Browser',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'TWD',
+          availability: 'https://schema.org/InStock',
+        },
+        featureList: ['拖拽式問卷建立', '多種題型支援', '即時數據統計', '響應式設計', '多格式匯出', '多語言支援'],
+      }),
+    },
+  ],
 })
 
 const { t } = useI18n()

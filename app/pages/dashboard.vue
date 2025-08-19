@@ -38,7 +38,7 @@
 
           <!-- 麵包屑導航 -->
           <div class="mb-6">
-            <Breadcrumb :items="[{ label: $t('header.dashboard'), href: '/dashboard' }]" />
+            <Breadcrumb :items="[{ label: $t('header.dashboard'), to: '/dashboard' }]" />
           </div>
 
           <!-- 內容區域 -->
@@ -148,9 +148,12 @@ import type { SurveyListAPIItem, APIResponse } from '~~/types/index'
 useSeoMeta({
   title: 'Dashboard - SurveyFlow',
   description: '管理你的問卷調查，查看統計數據和回應。',
-  keywords: 'SurveyFlow,問卷管理,數據統計,問卷調查',
+  keywords: 'SurveyFlow,問卷管理,數據統計,問卷調查,dashboard',
   ogTitle: 'Dashboard - SurveyFlow',
   ogDescription: '管理你的問卷調查，查看統計數據和回應。',
+  ogImage: 'https://nuxt-survey.vercel.app/og-image.svg',
+  ogUrl: 'https://nuxt-survey.vercel.app/dashboard',
+  robots: 'noindex, nofollow',
 })
 
 const { t } = useI18n()
@@ -229,7 +232,7 @@ const handleDelete = async (surveyId: string, surveyTitle: string) => {
       },
     )
     await $fetch(`/api/surveys/${surveyId}`, {
-      method: 'DELETE',
+      method: 'DELETE' as any,
     })
 
     ElMessage.success(t('messages.delete_success'))

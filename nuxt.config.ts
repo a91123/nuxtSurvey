@@ -2,6 +2,7 @@ import { defineNuxtConfig } from 'nuxt/config'
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  ssr: true,
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxtjs/i18n',
@@ -27,6 +28,7 @@ export default defineNuxtConfig({
     }
   },
   css: [
+    'element-plus/dist/index.css',
     '@fortawesome/fontawesome-free/css/all.min.css',
     '~/assets/css/custom.css'
   ],
@@ -44,6 +46,16 @@ export default defineNuxtConfig({
   // Sitemap 設定
   site: {
     url: 'https://nuxt-survey.vercel.app',
+    name: 'SurveyFlow',
+    description: 'SurveyFlow - 專業的線上問卷調查系統',
+    defaultLocale: 'zh-TW'
+  },
+  
+  // Sitemap 詳細配置
+  sitemap: {
+    sources: [
+      '/api/__sitemap__/urls'
+    ]
   },
   // SEO 和 Meta 標籤設定
   app: {
