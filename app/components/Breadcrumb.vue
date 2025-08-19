@@ -1,11 +1,6 @@
 <template>
   <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-6" :aria-label="$t('breadcrumb.aria_label')">
-    <ol
-      v-if="showBreadcrumbs"
-      class="flex items-center space-x-2"
-      itemscope
-      itemtype="https://schema.org/BreadcrumbList"
-    >
+    <ol class="flex items-center space-x-2" itemscope itemtype="https://schema.org/BreadcrumbList">
       <li
         v-for="(item, index) in breadcrumbs"
         :key="index"
@@ -41,17 +36,10 @@
             {{ item.label }}
           </span>
         </NuxtLink>
-
         <!-- SEO 結構化數據 -->
         <meta itemprop="position" :content="(index + 1).toString()" />
       </li>
     </ol>
-
-    <!-- 當沒有麵包屑時的簡單顯示 -->
-    <div v-else class="flex items-center">
-      <i class="fa-solid fa-home text-gray-400 mr-1.5"></i>
-      <span class="font-medium text-gray-800">{{ $t('common.home') }}</span>
-    </div>
   </nav>
 </template>
 
@@ -69,11 +57,6 @@ interface Props {
 const props = defineProps<Props>()
 const route = useRoute()
 
-// 判斷是否顯示完整的麵包屑（有多個層級時）
-const showBreadcrumbs = computed(() => {
-  return props.items.length > 0
-})
-
 // 總是包含首頁的完整麵包屑
 const breadcrumbs = computed(() => {
   const { t } = useI18n()
@@ -83,8 +66,12 @@ const breadcrumbs = computed(() => {
     icon: 'fa-solid fa-home',
   }
 
-  // 如果第一個項目不是首頁，則加上首頁
-  if (props.items.length > 0 && props.items[0]?.to !== '/') {
+  // 如果沒有項目或第一個項目不是首頁，則加上首頁
+  if (props.items.length === 0) {
+    return [homeBreadcrumb] // 只有首頁
+  }
+
+  if (props.items[0]?.to !== '/') {
     return [homeBreadcrumb, ...props.items]
   }
 
