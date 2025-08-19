@@ -5,7 +5,8 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxtjs/i18n',
-    '@element-plus/nuxt'
+    '@element-plus/nuxt',
+    '@nuxtjs/sitemap'
   ],
   // i18n 設定
   i18n: {
@@ -35,6 +36,10 @@ export default defineNuxtConfig({
       '/sitemap.xml': { headers: { 'Content-Type': 'application/xml; charset=utf-8' } },
       '/robots.txt': { headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
     }
+  },
+  // Sitemap 設定
+  site: {
+    url: 'https://nuxt-survey.vercel.app',
   },
   // SEO 和 Meta 標籤設定
   app: {
