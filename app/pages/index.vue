@@ -1,247 +1,260 @@
 <template>
-  <div class="bg-gray-50 h-[calc(100vh-112px)] flex flex-col">
-    <!-- 中間白色内容區域 - 可滾動 -->
-    <div class="flex-1 bg-white mx-3 my-3 rounded-lg shadow-sm overflow-hidden flex flex-col min-h-0">
-      <div class="flex-1 overflow-y-auto min-h-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-          <!-- 頂部區域 - 標題和操作按鈕 -->
-          <div class="border-b border-gray-200 pb-6 mb-6">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-3">
-              <h1 class="text-xl sm:text-2xl font-bold text-gray-900">{{ $t('header.survey_management') }}</h1>
-              <NuxtLink to="/creator">
-                <el-button type="primary" class="w-full sm:w-auto">{{ $t('survey.create_new') }}</el-button>
-              </NuxtLink>
-            </div>
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <!-- Hero Section -->
+    <section class="relative px-4 pt-16 pb-24 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center">
+          <h1 class="text-4xl sm:text-6xl font-bold text-gray-900 tracking-tight">
+            <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"> SurveyFlow </span>
+          </h1>
+          <p class="mt-6 text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            {{ $t('home.hero_subtitle') }}
+          </p>
+          <p class="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
+            {{ $t('home.hero_description') }}
+          </p>
 
-            <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-              <div class="flex-1 min-w-0">
-                <el-input v-model="title" :placeholder="$t('ui.search_placeholder')" clearable class="w-full" />
-              </div>
-              <div class="flex gap-3">
-                <div class="flex-1 sm:w-40">
-                  <el-select v-model="status" :placeholder="$t('ui.status_placeholder')" clearable class="w-full">
-                    <el-option :label="$t('ui.all_status')" value="all" />
-                    <el-option :label="$t('survey.published')" value="published" />
-                    <el-option :label="$t('survey.draft')" value="draft" />
-                  </el-select>
-                </div>
-                <div class="flex-1 sm:w-44">
-                  <el-select v-model="sort" :placeholder="$t('ui.sort_placeholder')" class="w-full">
-                    <el-option :label="$t('ui.recent_update')" value="recent" />
-                    <el-option :label="$t('ui.most_responses')" value="responses" />
-                    <el-option :label="$t('ui.most_questions')" value="questions" />
-                  </el-select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 麵包屑導航 -->
-          <div class="mb-6">
-            <Breadcrumb :items="[]" />
-          </div>
-
-          <!-- 內容區域 -->
-          <div class="min-h-[400px]">
-            <div v-if="pending">
-              <el-skeleton :rows="6" animated />
-            </div>
-            <div v-else-if="error">
-              <el-alert
-                type="error"
-                :closable="false"
-                show-icon
-                :title="$t('messages.load_failed')"
-                :description="$t('messages.loading_error')"
-                class="mb-4"
-              />
-            </div>
-            <div
-              v-else-if="items.length > 0"
-              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
-            >
-              <!-- 問卷卡片 -->
-              <el-card v-for="s in items" :key="s.id" shadow="hover" class="relative">
-                <div class="text-base sm:text-lg font-semibold mb-2 pr-8">{{ s.title }}</div>
-                <div class="text-gray-600 mb-3 min-h-[1.5rem] text-sm">
-                  {{
-                    s.description && s.description.length > 50 ? s.description.substring(0, 47) + '...' : s.description
-                  }}
-                </div>
-                <div class="text-xs sm:text-sm text-gray-500 mb-2">
-                  {{ $t('survey.status') }}：<span
-                    :class="s.status === 'published' ? 'text-green-600' : 'text-yellow-600'"
-                  >
-                    {{ $t(`survey.${s.status}`) }}
-                  </span>
-                </div>
-                <div class="text-xs sm:text-sm text-gray-500 mb-2">
-                  {{ $t('survey.questions') }}：{{ s.questions }} · {{ $t('survey.responses') }}：{{ s.responses }}
-                </div>
-                <div class="text-xs text-gray-400 mb-2">
-                  {{ $t('survey.updated_at') }}：{{ formatDateTime(s.updatedAt) }}
-                </div>
-                <template #footer>
-                  <div class="flex flex-col sm:flex-row gap-2 justify-end">
-                    <div class="flex gap-2 justify-between sm:justify-end">
-                      <NuxtLink :to="`/editor/${s.id}`" class="flex-1 sm:flex-none">
-                        <el-button size="small" plain class="w-full sm:w-auto">{{ $t('common.edit') }}</el-button>
-                      </NuxtLink>
-                      <NuxtLink v-if="s.status === 'published'" :to="`/stats/${s.id}`" class="flex-1 sm:flex-none">
-                        <el-button size="small" plain class="w-full sm:w-auto">{{ $t('header.statistics') }}</el-button>
-                      </NuxtLink>
-                    </div>
-                    <el-button
-                      v-if="s.status === 'published'"
-                      size="small"
-                      plain
-                      @click="handleCopyLink(s.id.toString())"
-                      class="w-full sm:w-auto"
-                    >
-                      {{ $t('survey.copy_link') }}
-                    </el-button>
-                    <button
-                      class="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                      @click="handleDelete(s.id.toString(), s.title)"
-                      :title="$t('survey.delete_confirm')"
-                    >
-                      <i class="fa-regular fa-trash-can text-xs"></i>
-                    </button>
-                  </div>
-                </template>
-              </el-card>
-            </div>
-            <div v-else class="flex justify-center items-center h-64">
-              <el-empty :description="$t('ui.no_surveys')" />
-            </div>
+          <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <NuxtLink to="/creator">
+              <el-button type="primary" size="large" class="w-full sm:w-auto px-8 py-3 text-lg">
+                <i class="fa-solid fa-plus mr-2"></i>
+                {{ $t('home.start_creating') }}
+              </el-button>
+            </NuxtLink>
+            <NuxtLink to="/dashboard">
+              <el-button size="large" plain class="w-full sm:w-auto px-8 py-3 text-lg">
+                <i class="fa-solid fa-chart-line mr-2"></i>
+                {{ $t('home.view_dashboard') }}
+              </el-button>
+            </NuxtLink>
           </div>
         </div>
       </div>
 
-      <!-- 底部分頁器 - 固定在白色區域底部 -->
-      <div class="flex-shrink-0 border-t border-gray-200 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          <div class="flex justify-center sm:justify-end">
-            <el-pagination
-              :layout="isMobileView ? 'prev, pager, next' : 'prev, pager, next, jumper, ->, total, sizes'"
-              :page-size="pageSize"
-              :current-page="page"
-              :total="total"
-              :page-sizes="[6, 9, 12]"
-              :small="isMobileView"
-              @size-change="(ps:number)=>{ pageSize = ps; page = 1 }"
-              @current-change="(p:number)=>{ page = p }"
-              class="flex-wrap"
-            />
+      <!-- Floating Elements -->
+      <div class="absolute top-20 left-10 w-20 h-20 bg-blue-200 rounded-full opacity-20 animate-pulse"></div>
+      <div
+        class="absolute top-40 right-16 w-32 h-32 bg-indigo-200 rounded-full opacity-20 animate-pulse"
+        style="animation-delay: 1s"
+      ></div>
+      <div
+        class="absolute bottom-20 left-1/4 w-16 h-16 bg-purple-200 rounded-full opacity-20 animate-pulse"
+        style="animation-delay: 2s"
+      ></div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            {{ $t('home.features_title') }}
+          </h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            {{ $t('home.features_subtitle') }}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Feature 1 -->
+          <div
+            class="text-center p-6 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 hover:shadow-lg transition-shadow"
+          >
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fa-solid fa-wand-magic-sparkles text-2xl text-blue-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ $t('home.feature_1_title') }}</h3>
+            <p class="text-gray-600">{{ $t('home.feature_1_desc') }}</p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div
+            class="text-center p-6 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 hover:shadow-lg transition-shadow"
+          >
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fa-solid fa-chart-pie text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ $t('home.feature_2_title') }}</h3>
+            <p class="text-gray-600">{{ $t('home.feature_2_desc') }}</p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div
+            class="text-center p-6 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 hover:shadow-lg transition-shadow"
+          >
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fa-solid fa-mobile-screen-button text-2xl text-purple-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ $t('home.feature_3_title') }}</h3>
+            <p class="text-gray-600">{{ $t('home.feature_3_desc') }}</p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div
+            class="text-center p-6 rounded-xl bg-gradient-to-br from-orange-50 to-red-50 hover:shadow-lg transition-shadow"
+          >
+            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fa-solid fa-share-nodes text-2xl text-orange-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ $t('home.feature_4_title') }}</h3>
+            <p class="text-gray-600">{{ $t('home.feature_4_desc') }}</p>
+          </div>
+
+          <!-- Feature 5 -->
+          <div
+            class="text-center p-6 rounded-xl bg-gradient-to-br from-teal-50 to-cyan-50 hover:shadow-lg transition-shadow"
+          >
+            <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fa-solid fa-download text-2xl text-teal-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ $t('home.feature_5_title') }}</h3>
+            <p class="text-gray-600">{{ $t('home.feature_5_desc') }}</p>
+          </div>
+
+          <!-- Feature 6 -->
+          <div
+            class="text-center p-6 rounded-xl bg-gradient-to-br from-rose-50 to-pink-50 hover:shadow-lg transition-shadow"
+          >
+            <div class="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fa-solid fa-globe text-2xl text-rose-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ $t('home.feature_6_title') }}</h3>
+            <p class="text-gray-600">{{ $t('home.feature_6_desc') }}</p>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- How it Works Section -->
+    <section class="py-20 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            {{ $t('home.how_it_works_title') }}
+          </h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            {{ $t('home.how_it_works_subtitle') }}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="relative">
+              <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="text-2xl font-bold text-white">1</span>
+              </div>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ $t('home.step_1_title') }}</h3>
+            <p class="text-gray-600">{{ $t('home.step_1_desc') }}</p>
+          </div>
+
+          <div class="text-center">
+            <div class="relative">
+              <div class="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="text-2xl font-bold text-white">2</span>
+              </div>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ $t('home.step_2_title') }}</h3>
+            <p class="text-gray-600">{{ $t('home.step_2_desc') }}</p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-20 h-20 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span class="text-2xl font-bold text-white">3</span>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ $t('home.step_3_title') }}</h3>
+            <p class="text-gray-600">{{ $t('home.step_3_desc') }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+          <div>
+            <div class="text-4xl font-bold text-blue-600 mb-2">{{ stats.total || '100+' }}</div>
+            <div class="text-gray-600">{{ $t('home.stat_surveys') }}</div>
+          </div>
+          <div>
+            <div class="text-4xl font-bold text-green-600 mb-2">{{ stats.responses || '1000+' }}</div>
+            <div class="text-gray-600">{{ $t('home.stat_responses') }}</div>
+          </div>
+          <div>
+            <div class="text-4xl font-bold text-purple-600 mb-2">{{ stats.users || '50+' }}</div>
+            <div class="text-gray-600">{{ $t('home.stat_users') }}</div>
+          </div>
+          <div>
+            <div class="text-4xl font-bold text-orange-600 mb-2">99%</div>
+            <div class="text-gray-600">{{ $t('home.stat_satisfaction') }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-blue-600 to-indigo-600">
+      <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">
+          {{ $t('home.cta_title') }}
+        </h2>
+        <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+          {{ $t('home.cta_description') }}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <NuxtLink to="/creator">
+            <el-button size="large" class="w-full sm:w-auto px-8 py-3 text-lg bg-white text-blue-600 hover:bg-gray-50">
+              <i class="fa-solid fa-rocket mr-2"></i>
+              {{ $t('home.get_started') }}
+            </el-button>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
-<script setup lang="ts">
-import { useDebounceFn, useClipboard } from '@vueuse/core'
-import { ElMessageBox, ElMessage } from 'element-plus'
-import type { SurveyListAPIItem, APIResponse } from '~~/types/index'
 
+<script setup lang="ts">
 // SEO 設定
 useSeoMeta({
   title: 'SurveyFlow - 專業線上問卷調查平台',
   description:
-    'SurveyFlow 免費的線上問卷調查系統，支援拖拽式問卷建立、多種題型、即時數據統計。適合市場調查、客戶回饋、學術研究等各種場景。',
+    'SurveyFlow 是專業的線上問卷調查系統，支援拖拽式問卷建立、多種題型、即時數據統計。適合市場調查、客戶回饋、學術研究等各種場景。',
   keywords: 'SurveyFlow,問卷調查,線上問卷,市場調查,客戶回饋,數據收集,統計分析,免費問卷工具',
   ogTitle: 'SurveyFlow - 專業線上問卷調查平台',
-  ogDescription: 'SurveyFlow 免費的線上問卷調查系統，輕鬆建立專業問卷，收集和分析數據。',
+  ogDescription: 'SurveyFlow 是專業的線上問卷調查系統，輕鬆建立專業問卷，收集和分析數據。',
   ogUrl: 'https://nuxt-survey.vercel.app',
+  ogImage: 'https://nuxt-survey.vercel.app/og-image.png',
 })
 
 const { t } = useI18n()
-const { formatDateTime } = useDateFormatter()
 
-// 判斷是否為手機視圖
-const isMobileView = computed(() => {
-  if (typeof window === 'undefined') return false
-  return window.innerWidth < 640
+// 獲取統計數據
+const { data: surveyStats } = await useFetch('/api/surveys/stats', {
+  default: () => ({ success: true, data: { total: 0, responses: 0, users: 0 } }),
 })
 
-const title = ref('')
-const status = ref('all')
-const sort = ref<'recent' | 'responses' | 'questions' | 'title-asc' | 'title-desc'>('recent')
-const page = ref(1)
-const pageSize = ref(6)
-const titleDebounced = ref('')
-
-const applyDebounce = useDebounceFn((v: string) => {
-  titleDebounced.value = v
-  page.value = 1
-}, 300)
-
-watch(title, (v) => applyDebounce(v))
-
-// 建立反應式查詢參數
-const queryParams = computed(() => ({
-  search: titleDebounced.value,
-  status: status.value,
-  sort: sort.value,
-  page: page.value.toString(),
-  pageSize: pageSize.value.toString(),
-}))
-
-const {
-  data: surveysData,
-  pending,
-  error,
-  refresh,
-} = await useFetch<APIResponse<SurveyListAPIItem[]>>('/api/surveys', {
-  query: queryParams,
-})
-
-const items = computed(() => {
-  return surveysData.value?.success ? surveysData.value.data || [] : []
-})
-
-const total = computed(() => {
-  return surveysData.value?.pagination?.total || 0
-})
-
-const { copy, isSupported } = useClipboard()
-const handleCopyLink = async (surveyId: string) => {
-  const surveyUrl = `${window.location.origin}/survey/${surveyId}`
-  if (isSupported.value) {
-    await copy(surveyUrl)
-    ElMessage.success(t('messages.copy_success'))
-  } else {
-    ElMessageBox.alert(`請手動複製此連結：\n${surveyUrl}`, t('survey.copy_link'), {
-      confirmButtonText: t('common.confirm'),
-      type: 'info',
-    })
+const stats = computed(() => {
+  if (surveyStats.value && surveyStats.value.success) {
+    return surveyStats.value.data
   }
-}
-
-const handleDelete = async (surveyId: string, surveyTitle: string) => {
-  try {
-    await ElMessageBox.confirm(
-      t('messages.delete_confirm_message', { title: surveyTitle }),
-      t('messages.delete_confirm_title'),
-      {
-        confirmButtonText: t('messages.delete_confirm_button'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning',
-        confirmButtonClass: 'el-button--danger',
-      },
-    )
-    await $fetch(`/api/surveys/${surveyId}`, {
-      method: 'DELETE',
-    })
-
-    ElMessage.success(t('messages.delete_success'))
-    await refresh()
-  } catch (error: any) {
-    if (error === 'cancel') {
-      return
-    }
-    console.error('刪除問卷失敗:', error)
-    ElMessage.error(error?.message || t('messages.delete_error'))
-  }
-}
+  return { total: 0, responses: 0, users: 0 }
+})
 </script>
+
+<style scoped>
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+</style>
