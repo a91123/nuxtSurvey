@@ -146,14 +146,16 @@ import type { SurveyListAPIItem, APIResponse } from '~~/types/index'
 
 // SEO 設定
 useSeoMeta({
-  title: 'Dashboard - SurveyFlow',
-  description: '管理你的問卷調查，查看統計數據和回應。',
-  keywords: 'SurveyFlow,問卷管理,數據統計,問卷調查,dashboard',
-  ogTitle: 'Dashboard - SurveyFlow',
-  ogDescription: '管理你的問卷調查，查看統計數據和回應。',
+  title: '問卷管理後台 - SurveyFlow',
+  description:
+    '專業問卷管理後台，輕鬆管理你的問卷調查、查看統計數據和回應分析。SurveyFlow 提供完整的問卷管理解決方案。',
+  keywords: 'SurveyFlow,問卷管理,數據統計,問卷調查,dashboard,問卷後台,調查管理',
+  ogTitle: '問卷管理後台 - SurveyFlow',
+  ogDescription: '專業問卷管理後台，輕鬆管理你的問卷調查、查看統計數據和回應分析。',
   ogImage: 'https://nuxt-survey.vercel.app/og-image.svg',
   ogUrl: 'https://nuxt-survey.vercel.app/dashboard',
-  robots: 'noindex, nofollow',
+  // 允許搜索引擎索引，這是一個公開的管理功能介紹頁面
+  robots: 'index, follow',
 })
 
 const { t } = useI18n()

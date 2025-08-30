@@ -40,11 +40,15 @@ export default defineNuxtConfig({
     routeRules: {
       '/sitemap.xml': { 
         headers: { 
-          'Content-Type': 'application/xml; charset=utf-8',
-          'X-Robots-Tag': 'noindex'
+          'Content-Type': 'application/xml; charset=utf-8'
         }
       },
-      '/robots.txt': { headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
+      '/robots.txt': { headers: { 'Content-Type': 'text/plain; charset=utf-8' } },
+      // 設定不需要被搜索引擎索引的頁面
+      '/editor/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+      '/stats/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+      '/survey/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+      '/api/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } }
     },
     externals: {
       inline: ['xlsx']
@@ -61,7 +65,50 @@ export default defineNuxtConfig({
   
   // Sitemap 詳細配置
   sitemap: {
-    exclude: ['/editor/**', '/stats/**', '/survey/**', '/api/**']
+    urls: [
+      {
+        loc: '/',
+        changefreq: 'daily',
+        priority: 1.0,
+        lastmod: new Date().toISOString()
+      },
+      {
+        loc: '/dashboard',
+        changefreq: 'weekly', 
+        priority: 0.8,
+        lastmod: new Date().toISOString()
+      },
+      {
+        loc: '/creator',
+        changefreq: 'weekly',
+        priority: 0.9,
+        lastmod: new Date().toISOString()
+      },
+      {
+        loc: '/about',
+        changefreq: 'monthly',
+        priority: 0.8,
+        lastmod: new Date().toISOString()
+      },
+      {
+        loc: '/features',
+        changefreq: 'monthly',
+        priority: 0.8,
+        lastmod: new Date().toISOString()
+      },
+      {
+        loc: '/privacy',
+        changefreq: 'yearly',
+        priority: 0.5,
+        lastmod: new Date().toISOString()
+      }
+    ],
+    exclude: ['/editor/**', '/stats/**', '/survey/**', '/api/**'],
+    defaults: {
+      changefreq: 'weekly',
+      priority: 0.7,
+      lastmod: new Date().toISOString()
+    }
   },
   // SEO 和 Meta 標籤設定
   app: {
