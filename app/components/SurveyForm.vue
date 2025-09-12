@@ -39,13 +39,13 @@
             >
             <div class="flex-1 flex justify-between">
               <div class="flex items-center gap-2">
-                <el-tooltip v-if="question.tip?.trim()" :content="question.tip" placement="top">
-                  <i class="fa-solid fa-circle-question hover:text-gray-400 transition-colors duration-200 mb-2"></i>
-                </el-tooltip>
                 <h3 class="text-lg font-semibold text-gray-800 mb-1">
                   <span v-if="question.required" class="text-red-500 ml-1">*</span>
                   {{ question.title }}
                 </h3>
+                <el-tooltip v-if="question.tip?.trim()" :content="question.tip" placement="top">
+                  <i class="fa-solid fa-circle-question text-gray-800 transition-colors duration-200"></i>
+                </el-tooltip>
               </div>
               <el-tag>{{ getQuestionTypeLabel(question.type) }}</el-tag>
             </div>

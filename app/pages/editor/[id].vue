@@ -54,15 +54,18 @@ watchEffect(() => {
   const data = surveyData.value
   if (!data) return
   if (data.success && data.data) {
-    const survey = data.data
+    const survey = data.data as any
+    const processedQuestions = (survey.questions || []).map((q: any, index: number) => ({
+      ...q,
+      id: q.id || `question-${index + 1}`,
+      tip: q.tip || '',
+    })) as Question[]
+
     Object.assign(formData, {
       title: survey.title || '',
       description: survey.description || '',
       status: survey.status || 'draft',
-      questions: (survey.questions || []).map((q: any, index: number) => ({
-        ...q,
-        id: q.id || `question-${index + 1}`,
-      })) as Question[],
+      questions: processedQuestions,
     })
   } else {
     console.error('載入問卷失敗:', data)
@@ -85,11 +88,11 @@ const handleSubmit = async () => {
         options: q.type === 'single' || q.type === 'multiple' ? (q.options || []).filter(Boolean) : undefined,
         min: q.type === 'number' ? q.min : undefined,
         max: q.type === 'number' ? q.max : undefined,
-        tip: q.tip?.trim() || undefined,
+        tip: q.tip && q.tip.trim() ? q.tip.trim() : undefined,
       })),
     }
     await $fetch(`/api/surveys/${surveyId}`, {
-      method: 'PUT',
+      method: 'PUT' as any,
       body: payload,
     })
     ElMessage.success(t('messages.update_success'))

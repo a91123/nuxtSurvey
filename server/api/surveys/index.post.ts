@@ -18,7 +18,10 @@ export default defineEventHandler(async (event) => {
         type: q.type,
         title: q.title,
         required: q.required,
-        options: q.options
+        options: q.options,
+        tip: q.tip,
+        min: q.min,
+        max: q.max
       })),
       createdAt: createTimeStamp(),
       updatedAt: createTimeStamp()

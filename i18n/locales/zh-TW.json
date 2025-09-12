@@ -195,7 +195,7 @@
     "number_max_label": "最大值",
     "number_min_placeholder": "設定最小值（選填）",
     "number_max_placeholder": "設定最大值（選填）",
-    "tip_label": "提示文字",
+    "tip_label": "填寫提示",
     "tip_placeholder": "為這個問題添加說明或提示（選填）",
     "submitting": "提交中...",
     "submit_survey": "提交問卷",

@@ -22,12 +22,12 @@ export const QUESTION_DEFAULT_TITLES: Record<QType, string> = {
 
 // 問題類型默認提示範例
 export const QUESTION_DEFAULT_TIPS: Record<QType, string> = {
-  text: '請詳細說明您的想法，字數建議在50字以上',
-  number: '請輸入正整數，若無特別說明可填寫0',
-  date: '請選擇您希望的日期，格式為年-月-日',
-  time: '請選擇具體的時間點，採用24小時制',
-  single: '請從以下選項中選擇一個最符合您情況的答案',
-  multiple: '可以選擇多個選項，請勾選所有符合的項目',
+  text: '請輸入您的想法或意見',
+  number: '請輸入數字',
+  date: '請選擇日期',
+  time: '請選擇時間',
+  single: '請選擇一個選項',
+  multiple: '可選擇多個選項',
 } as const
 
 // ============ 狀態相關 ============

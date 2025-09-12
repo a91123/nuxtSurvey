@@ -90,7 +90,8 @@
                   >{{ $t('ui.question_title_label') }} <span class="text-red-500">*</span></span
                 >
                 <el-input
-                  v-model="q.title"
+                  :model-value="q.title"
+                  @update:model-value="(value) => updateQuestionTitle(q, value)"
                   :placeholder="$t('editor.question_title_placeholder')"
                   :class="{ 'border-red-300': !q.title?.trim() }"
                 />
@@ -99,7 +100,11 @@
                 }}</span>
               </div>
               <div class="flex items-end">
-                <el-checkbox v-model="q.required">{{ $t('ui.required_field') }}</el-checkbox>
+                <el-checkbox
+                  :model-value="q.required"
+                  @update:model-value="(value) => updateQuestionRequired(q, Boolean(value))"
+                  >{{ $t('ui.required_field') }}</el-checkbox
+                >
               </div>
             </div>
 
@@ -107,7 +112,8 @@
             <div class="mt-3">
               <span class="block text-sm mb-1">{{ $t('ui.tip_label') }}</span>
               <el-input
-                v-model="q.tip"
+                :model-value="q.tip"
+                @update:model-value="(value) => updateQuestionTip(q, value)"
                 :placeholder="$t('ui.tip_placeholder')"
                 type="textarea"
                 :autosize="{ minRows: 2, maxRows: 3 }"
@@ -179,7 +185,14 @@
 
             <!-- 預覽區（依型別顯示對應輸入） -->
             <div class="mt-3">
-              <span class="block text-xs text-slate-500 mb-1">{{ $t('ui.preview_label') }}</span>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="block text-xs text-slate-500">{{ $t('ui.preview_label') }}</span>
+                <el-tooltip v-if="q.tip?.trim()" :content="q.tip" placement="top">
+                  <i
+                    class="fa-solid fa-circle-question text-gray-400 hover:text-gray-600 transition-colors duration-200 cursor-help text-xs"
+                  ></i>
+                </el-tooltip>
+              </div>
               <el-input v-if="q.type === 'text'" :placeholder="$t('ui.text_input_placeholder')" disabled />
               <el-input-number
                 v-else-if="q.type === 'number'"
@@ -304,10 +317,11 @@ const addQuestion = (type: QType) => {
     type,
     title: defaultLabel(type),
     required: true,
-    tip: QUESTION_DEFAULT_TIPS[type],
+    tip:'',
   } as Question
   if (type === 'single' || type === 'multiple')
     base.options = [t('ui.option_default', { number: 1 }), t('ui.option_default', { number: 2 })]
+
   emit('update:questions', [...props.questions, base])
 }
 
@@ -362,6 +376,30 @@ const updateOptionText = (q: Question, index: number, value: string) => {
     newOptions[index] = value
     return { ...question, options: newOptions }
   })
+}
+
+const updateQuestionTitle = (q: Question, value: string) => {
+  if (!q.id) return
+  updateQuestion(q.id, (question) => ({
+    ...question,
+    title: value,
+  }))
+}
+
+const updateQuestionRequired = (q: Question, value: boolean) => {
+  if (!q.id) return
+  updateQuestion(q.id, (question) => ({
+    ...question,
+    required: value,
+  }))
+}
+
+const updateQuestionTip = (q: Question, value: string) => {
+  if (!q.id) return
+  updateQuestion(q.id, (question) => ({
+    ...question,
+    tip: value,
+  }))
 }
 
 const getRangeText = (q: Question) => {
