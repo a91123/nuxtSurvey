@@ -1,15 +1,10 @@
 <template>
   <section class="space-y-6">
-      <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold">{{ isEditing ? $t('editor.title') : $t('editor.create_title') }}</h1>
       <div class="flex gap-2">
         <el-button @click="navigateTo('/dashboard')">{{ $t('navigation.back_to_list') }}</el-button>
-        <el-button
-          type="primary"
-          @click="submit"
-          :loading="isSubmitting"
-          :disabled="isSubmitting"
-        >
+        <el-button type="primary" @click="submit" :loading="isSubmitting" :disabled="isSubmitting">
           {{ $t('common.save') }}
         </el-button>
       </div>
@@ -44,9 +39,11 @@
     </el-card>
 
     <el-card shadow="never">
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="text-sm text-slate-600 mr-2">{{ $t('ui.add_question') }}</span>
-        <el-button type="primary" plain @click="addQuestion('text')">{{ $t('editor.question_type_text') }}</el-button>
+      <div class="text-sm mb-2 text-slate-600 mr-2">{{ $t('ui.add_question') }}</div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+        <el-button class="w-full" type="primary" plain @click="addQuestion('text')">{{
+          $t('editor.question_type_text')
+        }}</el-button>
         <el-button type="primary" plain @click="addQuestion('number')">{{
           $t('editor.question_type_number')
         }}</el-button>
@@ -162,7 +159,13 @@
               <span class="block text-sm mb-2">{{ $t('ui.options_label') }}</span>
               <draggable
                 :model-value="optionsWithId(q)"
-                @update:model-value="(items: any[]) => updateOptions(q, items.map(item => item.text))"
+                @update:model-value="
+                  (items: any[]) =>
+                    updateOptions(
+                      q,
+                      items.map((item) => item.text),
+                    )
+                "
                 item-key="id"
                 :animation="200"
                 ghost-class="option-ghost"
@@ -450,9 +453,12 @@ const submit = async () => {
 }
 </script>
 
-<style>
+<style scoped>
 .ghost-class {
   border: 1px dashed rgb(6 182 212);
   border-radius: 8px;
+}
+:deep(.grid .el-button) {
+  margin-left: 0 !important;
 }
 </style>
