@@ -1,10 +1,17 @@
 <template>
   <section class="space-y-6">
-    <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between">
       <h1 class="text-2xl font-bold">{{ isEditing ? $t('editor.title') : $t('editor.create_title') }}</h1>
       <div class="flex gap-2">
         <el-button @click="navigateTo('/dashboard')">{{ $t('navigation.back_to_list') }}</el-button>
-        <el-button type="primary" @click="submit">{{ $t('common.save') }}</el-button>
+        <el-button
+          type="primary"
+          @click="submit"
+          :loading="isSubmitting"
+          :disabled="isSubmitting"
+        >
+          {{ $t('common.save') }}
+        </el-button>
       </div>
     </div>
 
@@ -287,6 +294,7 @@ const questions = computed({
 })
 
 const formRef = ref<FormInstance>()
+const isSubmitting = ref(false)
 
 const { t } = useI18n()
 
@@ -317,7 +325,7 @@ const addQuestion = (type: QType) => {
     type,
     title: defaultLabel(type),
     required: true,
-    tip:'',
+    tip: '',
   } as Question
   if (type === 'single' || type === 'multiple')
     base.options = [t('ui.option_default', { number: 1 }), t('ui.option_default', { number: 2 })]
@@ -414,6 +422,7 @@ const getRangeText = (q: Question) => {
 }
 
 const submit = async () => {
+  if (isSubmitting.value) return
   if (!formRef.value) return
 
   const emptyLabelQuestions = props.questions.filter((q) => !q.title?.trim())
@@ -428,12 +437,15 @@ const submit = async () => {
   }
 
   try {
+    isSubmitting.value = true
     const valid = await formRef.value.validate()
     if (valid) {
       emit('submit')
     }
   } catch (error) {
     ElMessage.error(t('messages.form_validation_error'))
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>
