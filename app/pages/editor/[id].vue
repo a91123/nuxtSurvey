@@ -15,7 +15,8 @@
         v-model:description="formData.description"
         v-model:status="formData.status"
         v-model:questions="formData.questions"
-        :is-editing="true"
+        :isEditing="true"
+        :isLoading="isSaving"
         @submit="handleSubmit"
       />
     </div>
@@ -50,6 +51,8 @@ const formData = reactive({
   questions: [] as Question[],
 })
 
+const isSaving = ref(false)
+
 watchEffect(() => {
   const data = surveyData.value
   if (!data) return
@@ -75,7 +78,11 @@ watchEffect(() => {
 })
 
 const handleSubmit = async () => {
+  if (isSaving.value) return
+
   try {
+    isSaving.value = true
+
     const payload = {
       title: formData.title.trim(),
       description: formData.description.trim(),
@@ -91,15 +98,20 @@ const handleSubmit = async () => {
         tip: q.tip && q.tip.trim() ? q.tip.trim() : undefined,
       })),
     }
-    await $fetch(`/api/surveys/${surveyId}`, {
+
+    const response = await $fetch(`/api/surveys/${surveyId}`, {
       method: 'PUT' as any,
       body: payload,
     })
+
+    console.log('✅ Survey updated:', response)
     ElMessage.success(t('messages.update_success'))
     await navigateTo('/dashboard')
   } catch (error) {
     ElMessage.error(t('messages.update_failed'))
     console.error(error)
+  } finally {
+    isSaving.value = false
   }
 }
 </script>

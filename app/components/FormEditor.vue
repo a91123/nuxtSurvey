@@ -4,7 +4,7 @@
       <h1 class="text-2xl font-bold">{{ isEditing ? $t('editor.title') : $t('editor.create_title') }}</h1>
       <div class="flex gap-2">
         <el-button @click="navigateTo('/dashboard')">{{ $t('navigation.back_to_list') }}</el-button>
-        <el-button type="primary" @click="submit" :loading="isSubmitting" :disabled="isSubmitting">
+        <el-button type="primary" @click="submit" :loading="isLoading" :disabled="isLoading">
           {{ $t('common.save') }}
         </el-button>
       </div>
@@ -41,9 +41,7 @@
     <el-card shadow="never">
       <div class="text-sm mb-2 text-slate-600 mr-2">{{ $t('ui.add_question') }}</div>
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-        <el-button class="w-full" type="primary" plain @click="addQuestion('text')">{{
-          $t('editor.question_type_text')
-        }}</el-button>
+        <el-button type="primary" plain @click="addQuestion('text')">{{ $t('editor.question_type_text') }}</el-button>
         <el-button type="primary" plain @click="addQuestion('number')">{{
           $t('editor.question_type_number')
         }}</el-button>
@@ -258,6 +256,7 @@ interface Props {
   status: 'draft' | 'published'
   questions: Question[]
   isEditing?: boolean
+  isLoading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -266,6 +265,7 @@ const props = withDefaults(defineProps<Props>(), {
   status: 'draft',
   questions: () => [],
   isEditing: false,
+  isLoading: false,
 })
 
 const emit = defineEmits<{
@@ -297,8 +297,6 @@ const questions = computed({
 })
 
 const formRef = ref<FormInstance>()
-const isSubmitting = ref(false)
-
 const { t } = useI18n()
 
 const rules = reactive<FormRules>({
@@ -425,7 +423,7 @@ const getRangeText = (q: Question) => {
 }
 
 const submit = async () => {
-  if (isSubmitting.value) return
+  if (props.isLoading) return
   if (!formRef.value) return
 
   const emptyLabelQuestions = props.questions.filter((q) => !q.title?.trim())
@@ -440,15 +438,12 @@ const submit = async () => {
   }
 
   try {
-    isSubmitting.value = true
     const valid = await formRef.value.validate()
     if (valid) {
       emit('submit')
     }
   } catch (error) {
     ElMessage.error(t('messages.form_validation_error'))
-  } finally {
-    isSubmitting.value = false
   }
 }
 </script>

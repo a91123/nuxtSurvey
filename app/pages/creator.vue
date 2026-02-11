@@ -6,7 +6,8 @@
       v-model:description="formData.description"
       v-model:status="formData.status"
       v-model:questions="formData.questions"
-      :is-editing="false"
+      :isEditing="false"
+      :isLoading="isSaving"
       @submit="handleSubmit"
     />
   </div>
@@ -47,8 +48,14 @@ const formData = reactive({
   questions: [] as Question[],
 })
 
+const isSaving = ref(false)
+
 const handleSubmit = async () => {
+  if (isSaving.value) return
+
   try {
+    isSaving.value = true
+
     const payload = {
       title: formData.title.trim(),
       description: formData.description.trim(),
@@ -67,8 +74,7 @@ const handleSubmit = async () => {
 
     console.log('🚀 Creating survey with payload:', payload)
 
-    // 使用 $fetch 調用 API
-    const response = await $fetch('/api/surveys', {
+    const response = await $fetch(`/api/surveys`, {
       method: 'POST',
       body: payload,
     })
@@ -79,6 +85,8 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('❌ Error creating survey:', error)
     ElMessage.error(t('messages.create_failed'))
+  } finally {
+    isSaving.value = false
   }
 }
 </script>
