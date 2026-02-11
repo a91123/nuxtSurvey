@@ -85,7 +85,6 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('❌ Error creating survey:', error)
     ElMessage.error(t('messages.create_failed'))
-  } finally {
     isSaving.value = false
   }
 }

@@ -110,7 +110,6 @@ const handleSubmit = async () => {
   } catch (error) {
     ElMessage.error(t('messages.update_failed'))
     console.error(error)
-  } finally {
     isSaving.value = false
   }
 }
