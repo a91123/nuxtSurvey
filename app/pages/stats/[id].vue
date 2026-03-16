@@ -10,7 +10,6 @@
           </div>
           <div class="flex items-center gap-2 sm:gap-3">
             <!-- 語言切換 -->
-            <LanguageSwitcherCompact class="sm:hidden" />
             <LanguageSwitcher class="hidden sm:block" />
             <!-- 返回按鈕 -->
             <el-button plain @click="navigateTo('/')" class="text-gray-600 hover:text-blue-600" size="small">
